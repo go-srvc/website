@@ -20,12 +20,13 @@ type Pkg struct {
 	Group      string // URL group, e.g. "srvc" or "mods"
 }
 
-// URLPath returns the URL path the package's latest-version page is served at.
+// URLPath returns the package's latest-version page path, relative to site root,
+// without a leading slash. Pages prefix it with their own RelPrefix to navigate up.
 func (p Pkg) URLPath() string {
 	if p.Group == p.Slug {
-		return "/" + p.Group + "/"
+		return p.Group + "/"
 	}
-	return "/" + p.Group + "/" + p.Slug + "/"
+	return p.Group + "/" + p.Slug + "/"
 }
 
 // All is the canonical list of packages rendered into the website.

@@ -1,9 +1,9 @@
 {{define "content"}}
 <section class="page-head">
 	<p class="crumbs">
-		<a href="/">go-srvc</a>
-		{{if eq .Pkg.Group "mods"}} / <a href="/mods/">mods</a>{{end}}
-		/ <a href="{{.Pkg.URLPath}}">{{.Pkg.Slug}}</a>
+		<a href="{{.RelPrefix}}">go-srvc</a>
+		{{if eq .Pkg.Group "mods"}} / <a href="{{.RelPrefix}}mods/">mods</a>{{end}}
+		/ <a href="{{.RelPrefix}}{{.Pkg.URLPath}}">{{.Pkg.Slug}}</a>
 	</p>
 	<h1>{{.Pkg.ImportPath}}</h1>
 	<div class="meta">

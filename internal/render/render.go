@@ -105,6 +105,7 @@ func fetchAll(cache string) ([]bundle, error) {
 type indexData struct {
 	Title       string
 	Description string
+	RelPrefix   string
 	SrvcVersion string
 	ModCount    int
 }
@@ -118,18 +119,20 @@ type modsCard struct {
 type modsData struct {
 	Title       string
 	Description string
+	RelPrefix   string
 	Mods        []modsCard
 }
 
 type versionLink struct {
 	Version  string
-	URL      string
+	URL      string // already includes the page's RelPrefix
 	IsLatest bool
 }
 
 type pkgData struct {
 	Title       string
 	Description string
+	RelPrefix   string
 	Pkg         catalog.Pkg
 	Version     string
 	IsLatest    bool
@@ -152,6 +155,7 @@ func renderIndex(out string, bundles []bundle) error {
 	data := indexData{
 		Title:       "go-srvc · Simple, Safe, Modular Service Runner",
 		Description: "A tiny Go library for composing service modules with a clean lifecycle.",
+		RelPrefix:   "",
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {
@@ -184,6 +188,7 @@ func renderModsCatalog(out string, bundles []bundle) error {
 	return writeTemplate(tmpl, filepath.Join(out, "mods", "index.html"), modsData{
 		Title:       "Mods · go-srvc",
 		Description: "Ready-made srvc modules: HTTP, SQL, OpenTelemetry, signal, ticker.",
+		RelPrefix:   "../",
 		Mods:        mods,
 	})
 }
@@ -195,42 +200,22 @@ func renderPackage(out string, b bundle) error {
 		base = filepath.Join(base, b.Pkg.Slug)
 	}
 
-	versions := make([]versionLink, 0, len(b.Versions))
-	for _, v := range b.Versions {
-		versions = append(versions, versionLink{
-			Version:  v,
-			URL:      packageURL(b.Pkg) + v + "/",
-			IsLatest: v == b.Latest,
-		})
-	}
-
 	for _, v := range b.Versions {
 		doc := b.Docs[v]
 		isLatest := v == b.Latest
-		data := pkgData{
-			Title:       fmt.Sprintf("%s@%s · go-srvc", b.Pkg.ImportPath, v),
-			Description: firstSentence(doc.Doc),
-			Pkg:         b.Pkg,
-			Version:     v,
-			IsLatest:    isLatest,
-			Versions:    versions,
-			Doc:         doc,
-			DocHTML:     godocHTML(doc.Doc),
-			ReadmeHTML:  markdownHTML(doc.Readme),
-			Sections: pkgSections{
-				HasConsts: len(doc.Consts) > 0,
-				HasVars:   len(doc.Vars) > 0,
-				HasFuncs:  len(doc.Funcs) > 0,
-				HasTypes:  len(doc.Types) > 0,
-				HasEx:     len(doc.Examples) > 0,
-			},
-		}
 
-		if err := writeTemplate(tmpl, filepath.Join(base, v, "index.html"), data); err != nil {
+		// Versioned page: dist/<group>[/slug]/<v>/index.html
+		versionedPath := filepath.Join(base, v, "index.html")
+		versionedPrefix := relPrefix(versionedPath, out)
+		if err := writeTemplate(tmpl, versionedPath, makePkgData(b, v, doc, isLatest, versionedPrefix)); err != nil {
 			return err
 		}
+
 		if isLatest {
-			if err := writeTemplate(tmpl, filepath.Join(base, "index.html"), data); err != nil {
+			// Canonical "latest" page: dist/<group>[/slug]/index.html
+			canonicalPath := filepath.Join(base, "index.html")
+			canonicalPrefix := relPrefix(canonicalPath, out)
+			if err := writeTemplate(tmpl, canonicalPath, makePkgData(b, v, doc, isLatest, canonicalPrefix)); err != nil {
 				return err
 			}
 		}
@@ -238,11 +223,45 @@ func renderPackage(out string, b bundle) error {
 	return nil
 }
 
-func packageURL(p catalog.Pkg) string {
-	if p.Slug == p.Group {
-		return "/" + p.Group + "/"
+func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefix string) pkgData {
+	versions := make([]versionLink, 0, len(b.Versions))
+	for _, vv := range b.Versions {
+		versions = append(versions, versionLink{
+			Version:  vv,
+			URL:      prefix + b.Pkg.URLPath() + vv + "/",
+			IsLatest: vv == b.Latest,
+		})
 	}
-	return "/" + p.Group + "/" + p.Slug + "/"
+	return pkgData{
+		Title:       fmt.Sprintf("%s@%s · go-srvc", b.Pkg.ImportPath, v),
+		Description: firstSentence(doc.Doc),
+		RelPrefix:   prefix,
+		Pkg:         b.Pkg,
+		Version:     v,
+		IsLatest:    isLatest,
+		Versions:    versions,
+		Doc:         doc,
+		DocHTML:     godocHTML(doc.Doc),
+		ReadmeHTML:  markdownHTML(doc.Readme),
+		Sections: pkgSections{
+			HasConsts: len(doc.Consts) > 0,
+			HasVars:   len(doc.Vars) > 0,
+			HasFuncs:  len(doc.Funcs) > 0,
+			HasTypes:  len(doc.Types) > 0,
+			HasEx:     len(doc.Examples) > 0,
+		},
+	}
+}
+
+// relPrefix returns the relative path from a page's output file back to the
+// site root, e.g. "../../" for dist/mods/tickermod/v1.0.0/index.html.
+func relPrefix(outputPath, root string) string {
+	rel, err := filepath.Rel(root, filepath.Dir(outputPath))
+	if err != nil || rel == "." {
+		return ""
+	}
+	depth := strings.Count(rel, string(filepath.Separator)) + 1
+	return strings.Repeat("../", depth)
 }
 
 func mustParse(paths ...string) *template.Template {

@@ -15,8 +15,8 @@
 	<p class="tagline">{{.Description}}</p>
 	<pre class="install"><code>go get github.com/go-srvc/srvc</code></pre>
 	<p class="hero-links">
-		<a class="btn" href="/srvc/">srvc docs</a>
-		<a class="btn btn-secondary" href="/mods/">mods catalog</a>
+		<a class="btn" href="{{.RelPrefix}}srvc/">srvc docs</a>
+		<a class="btn btn-secondary" href="{{.RelPrefix}}mods/">mods catalog</a>
 	</p>
 </section>
 
@@ -59,12 +59,12 @@
 
 <section class="cards">
 	<article class="card">
-		<h2><a href="/srvc/">srvc</a></h2>
+		<h2><a href="{{.RelPrefix}}srvc/">srvc</a></h2>
 		<p>Package overview, exported API, and runnable examples extracted from the latest tagged release.</p>
 		{{if .SrvcVersion}}<p class="card-status"><code>{{.SrvcVersion}}</code></p>{{end}}
 	</article>
 	<article class="card">
-		<h2><a href="/mods/">Mods catalog</a></h2>
+		<h2><a href="{{.RelPrefix}}mods/">Mods catalog</a></h2>
 		<p>Ready-made modules for HTTP, SQL, OpenTelemetry, signals, and tickers. Pick a tagged release on each mod's page.</p>
 		{{if .ModCount}}<p class="card-status">{{.ModCount}} modules</p>{{end}}
 	</article>

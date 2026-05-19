@@ -1,0 +1,187 @@
+/*
+ * Lifecycle scenarios shown as 4 simultaneous animated panels.
+ * Colour-coded module state changes drive the storytelling.
+ */
+
+:root {
+	--st-idle:     #94a3b8;
+	--st-init:     #fbbf24;
+	--st-run:      #34d399;
+	--st-stopping: #fb923c;
+	--st-stopped:  #475569;
+	--st-error:    #ef4444;
+	--st-panic:    #ec4899;
+}
+
+.lifecycle { margin: 2.5rem 0; }
+.lifecycle h2 { font-size: 1.4rem; margin: 0 0 0.4rem; }
+.lifecycle .lead { color: var(--fg-muted); max-width: 48rem; margin: 0 0 1rem; }
+
+.legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	margin: 0 0 1.25rem;
+	font-size: 0.85rem;
+}
+.legend .item { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--fg-muted); }
+.legend .dot { width: 0.7rem; height: 0.7rem; border-radius: 2px; display: inline-block; background: var(--st-idle); }
+.legend .dot.init     { background: var(--st-init); }
+.legend .dot.run      { background: var(--st-run); }
+.legend .dot.stopping { background: var(--st-stopping); }
+.legend .dot.stopped  { background: var(--st-stopped); }
+.legend .dot.error    { background: var(--st-error); }
+.legend .dot.panic    { background: var(--st-panic); }
+
+.anim-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1rem;
+}
+
+.anim {
+	margin: 0;
+	padding: 1rem;
+	background: var(--bg-alt);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+}
+.anim h3 { margin: 0 0 0.4rem; font-size: 1rem; font-family: var(--mono); }
+.anim figcaption { color: var(--fg-muted); font-size: 0.85rem; margin-top: 0.5rem; }
+.anim svg { display: block; width: 100%; height: auto; max-height: 110px; }
+
+.anim svg .label    { fill: var(--fg); font-family: var(--mono); font-size: 12px; }
+.anim svg .substate { fill: var(--fg-muted); font-family: var(--mono); font-size: 10px; }
+.anim svg .box      { stroke: var(--border); stroke-width: 1; fill: var(--st-idle); }
+.anim svg .signal {
+	fill: none;
+	stroke: var(--fg-muted);
+	stroke-width: 1.5;
+	stroke-dasharray: 3 2;
+	opacity: 0;
+}
+
+/* Common module animation behaviour: one cycle every 6s. */
+.anim svg .m1, .anim svg .m2, .anim svg .m3 {
+	animation-duration: 6s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+/* Scenario 1: clean shutdown via signal. */
+.anim-clean .m1 { animation-name: clean-m1; }
+.anim-clean .m2 { animation-name: clean-m2; }
+.anim-clean .m3 { animation-name: clean-m3; }
+.anim-clean .signal { animation: signal-flash 6s infinite; animation-delay: 0s; }
+
+@keyframes clean-m1 {
+	0%, 4%    { fill: var(--st-idle); }
+	5%, 9%    { fill: var(--st-init); }
+	10%, 79%  { fill: var(--st-run); }
+	80%, 89%  { fill: var(--st-stopping); }
+	90%, 100% { fill: var(--st-stopped); }
+}
+@keyframes clean-m2 {
+	0%, 9%    { fill: var(--st-idle); }
+	10%, 14%  { fill: var(--st-init); }
+	15%, 74%  { fill: var(--st-run); }
+	75%, 84%  { fill: var(--st-stopping); }
+	85%, 100% { fill: var(--st-stopped); }
+}
+@keyframes clean-m3 {
+	0%, 14%   { fill: var(--st-idle); }
+	15%, 19%  { fill: var(--st-init); }
+	20%, 69%  { fill: var(--st-run); }
+	70%, 79%  { fill: var(--st-stopping); }
+	80%, 100% { fill: var(--st-stopped); }
+}
+
+/* Scenario 2: init error halfway. */
+.anim-init .m1 { animation-name: init-m1; }
+.anim-init .m2 { animation-name: init-m2; }
+.anim-init .m3 { animation-name: init-m3; }
+
+@keyframes init-m1 {
+	0%, 4%    { fill: var(--st-idle); }
+	5%, 9%    { fill: var(--st-init); }
+	10%, 29%  { fill: var(--st-run); }
+	30%, 39%  { fill: var(--st-stopping); }
+	40%, 100% { fill: var(--st-stopped); }
+}
+@keyframes init-m2 {
+	0%, 14%   { fill: var(--st-idle); }
+	15%, 24%  { fill: var(--st-init); }
+	25%, 100% { fill: var(--st-error); }
+}
+@keyframes init-m3 {
+	0%, 100%  { fill: var(--st-idle); }
+}
+
+/* Scenario 3: panic in run, others shut down gracefully. */
+.anim-panic .m1 { animation-name: panic-m1; }
+.anim-panic .m2 { animation-name: panic-m2; }
+.anim-panic .m3 { animation-name: panic-m3; }
+
+@keyframes panic-m1 {
+	0%, 4%    { fill: var(--st-idle); }
+	5%, 9%    { fill: var(--st-init); }
+	10%, 64%  { fill: var(--st-run); }
+	65%, 74%  { fill: var(--st-stopping); }
+	75%, 100% { fill: var(--st-stopped); }
+}
+@keyframes panic-m2 {
+	0%, 9%    { fill: var(--st-idle); }
+	10%, 14%  { fill: var(--st-init); }
+	15%, 49%  { fill: var(--st-run); }
+	50%, 100% { fill: var(--st-panic); }
+}
+@keyframes panic-m3 {
+	0%, 14%   { fill: var(--st-idle); }
+	15%, 19%  { fill: var(--st-init); }
+	20%, 54%  { fill: var(--st-run); }
+	55%, 64%  { fill: var(--st-stopping); }
+	65%, 100% { fill: var(--st-stopped); }
+}
+
+/* Scenario 4: stop hangs and the timeout fires. */
+.anim-timeout .m1 { animation-name: timeout-m1; }
+.anim-timeout .m2 { animation-name: timeout-m2; }
+.anim-timeout .m3 { animation-name: timeout-m3; }
+.anim-timeout .signal { animation: signal-flash 6s infinite; animation-delay: 0s; }
+
+@keyframes timeout-m1 {
+	0%, 4%    { fill: var(--st-idle); }
+	5%, 9%    { fill: var(--st-init); }
+	10%, 49%  { fill: var(--st-run); }
+	50%, 74%  { fill: var(--st-run); }
+	75%, 84%  { fill: var(--st-stopping); }
+	85%, 100% { fill: var(--st-stopped); }
+}
+@keyframes timeout-m2 {
+	0%, 9%    { fill: var(--st-idle); }
+	10%, 14%  { fill: var(--st-init); }
+	15%, 54%  { fill: var(--st-run); }
+	55%, 79%  { fill: var(--st-stopping); }
+	80%, 100% { fill: var(--st-error); }
+}
+@keyframes timeout-m3 {
+	0%, 14%   { fill: var(--st-idle); }
+	15%, 19%  { fill: var(--st-init); }
+	20%, 49%  { fill: var(--st-run); }
+	50%, 59%  { fill: var(--st-stopping); }
+	60%, 100% { fill: var(--st-stopped); }
+}
+
+@keyframes signal-flash {
+	0%, 44%   { opacity: 0; }
+	45%, 55%  { opacity: 1; }
+	56%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.anim svg .m1, .anim svg .m2, .anim svg .m3,
+	.anim svg .signal {
+		animation: none;
+	}
+	.anim svg .box { fill: var(--st-stopped); }
+}

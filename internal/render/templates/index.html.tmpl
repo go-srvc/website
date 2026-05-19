@@ -1,3 +1,14 @@
+{{define "anim-svg"}}
+<svg viewBox="0 0 280 60" aria-hidden="true" role="img">
+	<rect class="box m1" x="20" y="10" width="60" height="40" rx="4"/>
+	<rect class="box m2" x="110" y="10" width="60" height="40" rx="4"/>
+	<rect class="box m3" x="200" y="10" width="60" height="40" rx="4"/>
+	<text class="label" x="50" y="36" text-anchor="middle">M1</text>
+	<text class="label" x="140" y="36" text-anchor="middle">M2</text>
+	<text class="label" x="230" y="36" text-anchor="middle">M3</text>
+</svg>
+{{end}}
+
 {{define "content"}}
 <section class="hero">
 	<h1>Simple, Safe, Modular Service Runner</h1>
@@ -9,12 +20,44 @@
 	</p>
 </section>
 
+<section class="lifecycle">
+	<h2>Lifecycle, visualized</h2>
+	<p class="lead">Each panel shows the same three modules going through srvc's lifecycle under a different scenario. All animate continuously.</p>
+	<div class="legend" aria-hidden="true">
+		<span class="item"><span class="dot"></span>idle</span>
+		<span class="item"><span class="dot init"></span>init</span>
+		<span class="item"><span class="dot run"></span>run</span>
+		<span class="item"><span class="dot stopping"></span>stopping</span>
+		<span class="item"><span class="dot stopped"></span>stopped</span>
+		<span class="item"><span class="dot error"></span>error</span>
+		<span class="item"><span class="dot panic"></span>panic</span>
+	</div>
+
+	<div class="anim-grid">
+		<figure class="anim anim-clean">
+			<h3>Clean shutdown</h3>
+			{{template "anim-svg" .}}
+			<figcaption>Signal triggers shutdown. Modules stop in reverse order.</figcaption>
+		</figure>
+		<figure class="anim anim-init">
+			<h3>Init error</h3>
+			{{template "anim-svg" .}}
+			<figcaption>M2's Init fails. Only M1, the already-initialised module, gets Stop. M3 never starts.</figcaption>
+		</figure>
+		<figure class="anim anim-panic">
+			<h3>Panic recovery</h3>
+			{{template "anim-svg" .}}
+			<figcaption>M2 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</figcaption>
+		</figure>
+		<figure class="anim anim-timeout">
+			<h3>Stop timeout</h3>
+			{{template "anim-svg" .}}
+			<figcaption>M2's Stop hangs. <code>StopTimeout</code> fires; Run returns with <code>ErrStopTimeout</code>.</figcaption>
+		</figure>
+	</div>
+</section>
+
 <section class="cards">
-	<article class="card">
-		<h2>Lifecycle, visualized</h2>
-		<p>Animated scenarios for the happy path, init errors, panic recovery, stop timeout, and signal-driven shutdown.</p>
-		<p class="card-status">Coming soon</p>
-	</article>
 	<article class="card">
 		<h2><a href="/srvc/">srvc</a></h2>
 		<p>Package overview, exported API, and runnable examples extracted from the latest tagged release.</p>

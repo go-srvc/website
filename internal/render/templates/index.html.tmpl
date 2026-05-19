@@ -4,8 +4,8 @@
 	<p class="tagline">{{.Description}}</p>
 	<pre class="install"><code>go get github.com/go-srvc/srvc</code></pre>
 	<p class="hero-links">
-		<a class="btn" href="https://github.com/go-srvc/srvc">srvc on GitHub</a>
-		<a class="btn btn-secondary" href="https://pkg.go.dev/github.com/go-srvc/srvc">API reference</a>
+		<a class="btn" href="/srvc/">srvc docs</a>
+		<a class="btn btn-secondary" href="/mods/">mods catalog</a>
 	</p>
 </section>
 
@@ -16,14 +16,14 @@
 		<p class="card-status">Coming soon</p>
 	</article>
 	<article class="card">
-		<h2>srvc docs</h2>
-		<p>Package overview, exported API, and runnable examples extracted from the latest source.</p>
-		<p class="card-status">Coming soon</p>
+		<h2><a href="/srvc/">srvc</a></h2>
+		<p>Package overview, exported API, and runnable examples extracted from the latest tagged release.</p>
+		{{if .SrvcVersion}}<p class="card-status"><code>{{.SrvcVersion}}</code></p>{{end}}
 	</article>
 	<article class="card">
-		<h2>Mods catalog</h2>
-		<p>Per-module docs with a tag picker. Pick a tagged release and the docs and examples re-render.</p>
-		<p class="card-status">Coming soon</p>
+		<h2><a href="/mods/">Mods catalog</a></h2>
+		<p>Ready-made modules for HTTP, SQL, OpenTelemetry, signals, and tickers. Pick a tagged release on each mod's page.</p>
+		{{if .ModCount}}<p class="card-status">{{.ModCount}} modules</p>{{end}}
 	</article>
 </section>
 {{end}}

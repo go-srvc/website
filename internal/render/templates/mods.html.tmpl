@@ -1,0 +1,16 @@
+{{define "content"}}
+<section class="page-head">
+	<h1>Mods</h1>
+	<p class="tagline">{{.Description}}</p>
+</section>
+
+<section class="cards">
+	{{range .Mods}}
+	<article class="card">
+		<h2><a href="{{.Pkg.URLPath}}">{{.Pkg.Slug}}</a></h2>
+		<p>{{.Doc.Doc}}</p>
+		<p class="card-status"><code>{{.Version}}</code> · <code>{{.Pkg.ImportPath}}</code></p>
+	</article>
+	{{end}}
+</section>
+{{end}}

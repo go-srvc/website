@@ -1,0 +1,100 @@
+{{define "content"}}
+<section class="page-head">
+	<p class="crumbs">
+		<a href="/">go-srvc</a>
+		{{if eq .Pkg.Group "mods"}} / <a href="/mods/">mods</a>{{end}}
+		/ {{.Pkg.Slug}}
+	</p>
+	<h1>{{.Pkg.ImportPath}}</h1>
+	<p class="meta">
+		<code class="tag">{{.Version}}</code>
+		<a class="meta-link" href="https://pkg.go.dev/{{.Pkg.ImportPath}}">pkg.go.dev</a>
+		{{if eq .Pkg.Group "srvc"}}<a class="meta-link" href="https://github.com/go-srvc/srvc/tree/{{.Version}}">source</a>{{else}}<a class="meta-link" href="https://github.com/go-srvc/mods/tree/{{.Pkg.Slug}}/{{.Version}}/{{.Pkg.Slug}}">source</a>{{end}}
+	</p>
+	<pre class="install"><code>go get {{.Pkg.ImportPath}}@{{.Version}}</code></pre>
+</section>
+
+{{if .DocHTML}}
+<section class="doc-block">
+	<h2>Overview</h2>
+	{{.DocHTML}}
+</section>
+{{end}}
+
+{{if .Sections.HasConsts}}
+<section class="doc-block">
+	<h2>Constants</h2>
+	{{range .Doc.Consts}}
+	<div class="decl">
+		<pre class="sig"><code>{{.Signature}}</code></pre>
+		{{if .Doc}}{{godoc .Doc}}{{end}}
+	</div>
+	{{end}}
+</section>
+{{end}}
+
+{{if .Sections.HasVars}}
+<section class="doc-block">
+	<h2>Variables</h2>
+	{{range .Doc.Vars}}
+	<div class="decl">
+		<pre class="sig"><code>{{.Signature}}</code></pre>
+		{{if .Doc}}{{godoc .Doc}}{{end}}
+	</div>
+	{{end}}
+</section>
+{{end}}
+
+{{if .Sections.HasFuncs}}
+<section class="doc-block">
+	<h2>Functions</h2>
+	{{range .Doc.Funcs}}
+	<div class="decl" id="fn-{{.Name}}">
+		<h3>func {{.Name}}</h3>
+		<pre class="sig"><code>{{.Signature}}</code></pre>
+		{{if .Doc}}{{godoc .Doc}}{{end}}
+	</div>
+	{{end}}
+</section>
+{{end}}
+
+{{if .Sections.HasTypes}}
+<section class="doc-block">
+	<h2>Types</h2>
+	{{range .Doc.Types}}
+	<div class="decl" id="type-{{.Name}}">
+		<h3>type {{.Name}}</h3>
+		<pre class="sig"><code>{{.Signature}}</code></pre>
+		{{if .Doc}}{{godoc .Doc}}{{end}}
+		{{range .Methods}}
+		<div class="decl method" id="method-{{.Recv}}-{{.Name}}">
+			<h4>func ({{.Recv}}) {{.Name}}</h4>
+			<pre class="sig"><code>{{.Signature}}</code></pre>
+			{{if .Doc}}{{godoc .Doc}}{{end}}
+		</div>
+		{{end}}
+	</div>
+	{{end}}
+</section>
+{{end}}
+
+{{if .Sections.HasEx}}
+<section class="doc-block">
+	<h2>Examples</h2>
+	{{range .Doc.Examples}}
+	<div class="example" id="ex-{{.Name}}">
+		<h3>{{.Name}}</h3>
+		{{if .Doc}}{{godoc .Doc}}{{end}}
+		<pre class="code"><code>{{.Code}}</code></pre>
+	</div>
+	{{end}}
+</section>
+{{end}}
+
+{{if .ReadmeHTML}}
+<section class="doc-block readme">
+	<h2>README</h2>
+	{{.ReadmeHTML}}
+</section>
+{{end}}
+{{end}}

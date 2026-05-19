@@ -1,0 +1,5 @@
+dist/
+.cache/
+*.test
+coverage.txt
+junit.xml

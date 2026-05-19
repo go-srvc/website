@@ -1,0 +1,29 @@
+{{define "content"}}
+<section class="hero">
+	<h1>Simple, Safe, Modular Service Runner</h1>
+	<p class="tagline">{{.Description}}</p>
+	<pre class="install"><code>go get github.com/go-srvc/srvc</code></pre>
+	<p class="hero-links">
+		<a class="btn" href="https://github.com/go-srvc/srvc">srvc on GitHub</a>
+		<a class="btn btn-secondary" href="https://pkg.go.dev/github.com/go-srvc/srvc">API reference</a>
+	</p>
+</section>
+
+<section class="cards">
+	<article class="card">
+		<h2>Lifecycle, visualized</h2>
+		<p>Animated scenarios for the happy path, init errors, panic recovery, stop timeout, and signal-driven shutdown.</p>
+		<p class="card-status">Coming soon</p>
+	</article>
+	<article class="card">
+		<h2>srvc docs</h2>
+		<p>Package overview, exported API, and runnable examples extracted from the latest source.</p>
+		<p class="card-status">Coming soon</p>
+	</article>
+	<article class="card">
+		<h2>Mods catalog</h2>
+		<p>Per-module docs with a tag picker. Pick a tagged release and the docs and examples re-render.</p>
+		<p class="card-status">Coming soon</p>
+	</article>
+</section>
+{{end}}

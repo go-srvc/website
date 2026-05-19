@@ -7,7 +7,7 @@
 <section class="cards">
 	{{range .Mods}}
 	<article class="card">
-		<h2><a href="{{.Pkg.URLPath}}">{{.Pkg.Slug}}</a></h2>
+		<h2><a href="{{$.RelPrefix}}{{.Pkg.URLPath}}">{{.Pkg.Slug}}</a></h2>
 		<p>{{.Doc.Doc}}</p>
 		<p class="card-status"><code>{{.Version}}</code> · <code>{{.Pkg.ImportPath}}</code></p>
 	</article>

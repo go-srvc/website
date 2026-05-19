@@ -8,9 +8,10 @@ Static site built with a small Go generator. Plain HTML/CSS/JS, no JS framework,
 
 ```sh
 make build           # generates dist/
-make serve           # build + serve dist/ on http://localhost:8080
 make test            # go test ./...
 ```
+
+Open `dist/index.html` directly in a browser to preview. Pages use relative paths so `file://` works without a server.
 
 ## Deploy
 

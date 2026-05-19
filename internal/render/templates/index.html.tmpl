@@ -1,11 +1,13 @@
 {{define "anim-svg"}}
 <svg viewBox="0 0 280 60" aria-hidden="true" role="img">
-	<rect class="box m1" x="20" y="10" width="60" height="40" rx="4"/>
-	<rect class="box m2" x="110" y="10" width="60" height="40" rx="4"/>
-	<rect class="box m3" x="200" y="10" width="60" height="40" rx="4"/>
-	<text class="label" x="50" y="36" text-anchor="middle">M1</text>
-	<text class="label" x="140" y="36" text-anchor="middle">M2</text>
-	<text class="label" x="230" y="36" text-anchor="middle">M3</text>
+	<rect class="box m1" x="10" y="10" width="55" height="40" rx="4"/>
+	<rect class="box m2" x="75" y="10" width="55" height="40" rx="4"/>
+	<rect class="box m3" x="140" y="10" width="55" height="40" rx="4"/>
+	<rect class="box m4" x="205" y="10" width="55" height="40" rx="4"/>
+	<text class="label" x="37" y="35" text-anchor="middle">M1</text>
+	<text class="label" x="102" y="35" text-anchor="middle">M2</text>
+	<text class="label" x="167" y="35" text-anchor="middle">M3</text>
+	<text class="label" x="232" y="35" text-anchor="middle">M4</text>
 </svg>
 {{end}}
 
@@ -42,17 +44,17 @@
 		<figure class="anim anim-init">
 			<h3>Init error</h3>
 			{{template "anim-svg" .}}
-			<figcaption>M2's Init fails. Only M1, the already-initialised module, gets Stop. M3 never starts.</figcaption>
+			<figcaption>M3's Init fails. M1 and M2, the already-initialised modules, get Stop in reverse. M4 never starts.</figcaption>
 		</figure>
 		<figure class="anim anim-panic">
 			<h3>Panic recovery</h3>
 			{{template "anim-svg" .}}
-			<figcaption>M2 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</figcaption>
+			<figcaption>M3 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</figcaption>
 		</figure>
 		<figure class="anim anim-timeout">
 			<h3>Stop timeout</h3>
 			{{template "anim-svg" .}}
-			<figcaption>M2's Stop hangs. <code>StopTimeout</code> fires; Run returns with <code>ErrStopTimeout</code>.</figcaption>
+			<figcaption>M3's Stop hangs. <code>StopTimeout</code> fires and Run returns with <code>ErrStopTimeout</code>. Remaining stops never complete.</figcaption>
 		</figure>
 	</div>
 </section>

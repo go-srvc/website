@@ -23,8 +23,11 @@
 </section>
 
 <section class="lifecycle">
-	<h2>Lifecycle, visualized</h2>
-	<p class="lead">Each row shows the same four modules going through srvc's lifecycle under a different scenario. All animate continuously.</p>
+	<div class="lifecycle-head">
+		<h2>Lifecycle, visualized</h2>
+		<button class="play-pause" type="button" aria-pressed="false">Pause</button>
+	</div>
+	<p class="lead">Each row shows the same four modules going through srvc's lifecycle under a different scenario. One scenario plays at a time; the rest sit idle.</p>
 	<div class="legend" aria-hidden="true">
 		<span class="item"><span class="dot"></span>idle</span>
 		<span class="item"><span class="dot init"></span>init</span>
@@ -37,32 +40,32 @@
 
 	<div class="anim-list">
 		<figure class="anim anim-clean">
-			<div class="anim-vis">{{template "anim-svg" .}}</div>
 			<div class="anim-text">
 				<h3>Clean shutdown</h3>
 				<p>Signal triggers shutdown. Modules stop in reverse order.</p>
 			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 		<figure class="anim anim-init">
-			<div class="anim-vis">{{template "anim-svg" .}}</div>
 			<div class="anim-text">
 				<h3>Init error</h3>
 				<p>M3's Init fails. M1 and M2, the already-initialised modules, get Stop in reverse. M4 never starts.</p>
 			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 		<figure class="anim anim-panic">
-			<div class="anim-vis">{{template "anim-svg" .}}</div>
 			<div class="anim-text">
 				<h3>Panic recovery</h3>
 				<p>M3 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</p>
 			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 		<figure class="anim anim-timeout">
-			<div class="anim-vis">{{template "anim-svg" .}}</div>
 			<div class="anim-text">
 				<h3>Stop timeout</h3>
 				<p>M3's Stop hangs. <code>StopTimeout</code> fires and Run returns with <code>ErrStopTimeout</code>. Remaining stops never complete.</p>
 			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 	</div>
 </section>

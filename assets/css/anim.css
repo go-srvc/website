@@ -14,8 +14,22 @@
 }
 
 .lifecycle { margin: 2rem 0; }
-.lifecycle h2 { font-size: 1.4rem; margin: 0 0 0.4rem; }
+.lifecycle-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0 0 0.4rem; }
+.lifecycle-head h2 { font-size: 1.4rem; margin: 0; }
 .lifecycle .lead { color: var(--fg-muted); max-width: 48rem; margin: 0 0 1rem; }
+
+.play-pause {
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	color: var(--fg);
+	background: var(--bg-alt);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.3rem 0.75rem;
+	cursor: pointer;
+}
+.play-pause:hover { background: var(--bg); }
+.play-pause:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .legend {
 	display: flex;
@@ -49,7 +63,10 @@
 	grid-template-columns: 1fr 1fr;
 	gap: 1.5rem;
 	align-items: center;
+	transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+	opacity: 0.55;
 }
+.anim.active { opacity: 1; border-color: var(--accent); }
 .anim-vis { min-width: 0; }
 .anim-text { min-width: 0; }
 .anim h3 { margin: 0 0 0.35rem; font-size: 1rem; font-family: var(--mono); }
@@ -70,10 +87,10 @@
 }
 
 /* Clean shutdown: signal arrives mid-cycle, modules stop in reverse order. */
-.anim-clean .m1 { animation-name: clean-m1; }
-.anim-clean .m2 { animation-name: clean-m2; }
-.anim-clean .m3 { animation-name: clean-m3; }
-.anim-clean .m4 { animation-name: clean-m4; }
+.anim.active.anim-clean .m1 { animation-name: clean-m1; }
+.anim.active.anim-clean .m2 { animation-name: clean-m2; }
+.anim.active.anim-clean .m3 { animation-name: clean-m3; }
+.anim.active.anim-clean .m4 { animation-name: clean-m4; }
 
 @keyframes clean-m1 {
 	0%, 4%    { fill: var(--st-idle); }
@@ -105,10 +122,10 @@
 }
 
 /* Init error: M3's Init fails. M1 and M2 (already initialised) stop in reverse. M4 never starts. */
-.anim-init .m1 { animation-name: init-m1; }
-.anim-init .m2 { animation-name: init-m2; }
-.anim-init .m3 { animation-name: init-m3; }
-.anim-init .m4 { animation-name: init-m4; }
+.anim.active.anim-init .m1 { animation-name: init-m1; }
+.anim.active.anim-init .m2 { animation-name: init-m2; }
+.anim.active.anim-init .m3 { animation-name: init-m3; }
+.anim.active.anim-init .m4 { animation-name: init-m4; }
 
 @keyframes init-m1 {
 	0%, 4%    { fill: var(--st-idle); }
@@ -134,10 +151,10 @@
 }
 
 /* Panic in Run: M3 panics, the rest still shut down gracefully. */
-.anim-panic .m1 { animation-name: panic-m1; }
-.anim-panic .m2 { animation-name: panic-m2; }
-.anim-panic .m3 { animation-name: panic-m3; }
-.anim-panic .m4 { animation-name: panic-m4; }
+.anim.active.anim-panic .m1 { animation-name: panic-m1; }
+.anim.active.anim-panic .m2 { animation-name: panic-m2; }
+.anim.active.anim-panic .m3 { animation-name: panic-m3; }
+.anim.active.anim-panic .m4 { animation-name: panic-m4; }
 
 @keyframes panic-m1 {
 	0%, 4%    { fill: var(--st-idle); }
@@ -168,10 +185,10 @@
 }
 
 /* Stop timeout: M3's Stop hangs, ErrStopTimeout fires, the remaining stops never complete. */
-.anim-timeout .m1 { animation-name: timeout-m1; }
-.anim-timeout .m2 { animation-name: timeout-m2; }
-.anim-timeout .m3 { animation-name: timeout-m3; }
-.anim-timeout .m4 { animation-name: timeout-m4; }
+.anim.active.anim-timeout .m1 { animation-name: timeout-m1; }
+.anim.active.anim-timeout .m2 { animation-name: timeout-m2; }
+.anim.active.anim-timeout .m3 { animation-name: timeout-m3; }
+.anim.active.anim-timeout .m4 { animation-name: timeout-m4; }
 
 @keyframes timeout-m1 {
 	0%, 4%    { fill: var(--st-idle); }
@@ -197,6 +214,8 @@
 	50%, 57%  { fill: var(--st-stopping); }
 	58%, 100% { fill: var(--st-stopped); }
 }
+
+.anim-list.paused .anim.active .box { animation-play-state: paused; }
 
 @media (prefers-reduced-motion: reduce) {
 	.anim svg .m1, .anim svg .m2, .anim svg .m3, .anim svg .m4 {

@@ -1,54 +1,38 @@
-// Sequential playback of the lifecycle scenario animations.
-// One row is .active at a time. The play/pause button toggles the rotation
-// and freezes the active scenario where it is.
+// Sequential playback of the lifecycle scenario animations. By default rows
+// advance every 10 seconds. Hovering a row pins playback to that row until the
+// pointer leaves.
 (() => {
 	const list = document.querySelector('.anim-list');
 	if (!list) return;
-	const figures = list.querySelectorAll('.anim');
-	const btn = document.querySelector('.play-pause');
-	if (!figures.length || !btn) return;
+	const figures = Array.from(list.querySelectorAll('.anim'));
+	if (!figures.length) return;
 
 	const cycleMs = 10000;
 	let current = 0;
 	let timer = null;
-	let playing = true;
 
 	const setActive = (i) => {
 		current = ((i % figures.length) + figures.length) % figures.length;
 		figures.forEach((el, idx) => el.classList.toggle('active', idx === current));
 	};
 
-	const advance = () => setActive(current + 1);
-
-	const setButton = () => {
-		btn.textContent = playing ? 'Pause' : 'Play';
-		btn.setAttribute('aria-pressed', playing ? 'false' : 'true');
-	};
-
-	const play = () => {
-		if (playing) return;
-		playing = true;
-		list.classList.remove('paused');
+	const start = () => {
 		clearInterval(timer);
-		timer = setInterval(advance, cycleMs);
-		setButton();
+		timer = setInterval(() => setActive(current + 1), cycleMs);
 	};
 
-	const pause = () => {
-		if (!playing) return;
-		playing = false;
-		clearInterval(timer);
-		list.classList.add('paused');
-		setButton();
-	};
+	const stop = () => clearInterval(timer);
 
-	btn.addEventListener('click', () => (playing ? pause() : play()));
+	figures.forEach((fig, idx) => {
+		fig.addEventListener('mouseenter', () => {
+			stop();
+			setActive(idx);
+		});
+		fig.addEventListener('mouseleave', () => start());
+	});
 
 	setActive(0);
-	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-		pause();
-	} else {
-		timer = setInterval(advance, cycleMs);
-		setButton();
+	if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		start();
 	}
 })();

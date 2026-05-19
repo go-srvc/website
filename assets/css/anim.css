@@ -14,22 +14,8 @@
 }
 
 .lifecycle { margin: 2rem 0; }
-.lifecycle-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0 0 0.4rem; }
-.lifecycle-head h2 { font-size: 1.4rem; margin: 0; }
+.lifecycle h2 { font-size: 1.4rem; margin: 0 0 0.4rem; }
 .lifecycle .lead { color: var(--fg-muted); max-width: 48rem; margin: 0 0 1rem; }
-
-.play-pause {
-	font-family: var(--mono);
-	font-size: 0.85rem;
-	color: var(--fg);
-	background: var(--bg-alt);
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	padding: 0.3rem 0.75rem;
-	cursor: pointer;
-}
-.play-pause:hover { background: var(--bg); }
-.play-pause:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .legend {
 	display: flex;
@@ -214,8 +200,6 @@
 	50%, 57%  { fill: var(--st-stopping); }
 	58%, 100% { fill: var(--st-stopped); }
 }
-
-.anim-list.paused .anim.active .box { animation-play-state: paused; }
 
 @media (prefers-reduced-motion: reduce) {
 	.anim svg .m1, .anim svg .m2, .anim svg .m3, .anim svg .m4 {

@@ -1,21 +1,21 @@
 :root {
-	/* Sky theme defaults; themes.css overrides via [data-theme="..."]. */
-	--fg: #0f172a;
-	--fg-muted: #475569;
-	--bg: #ffffff;
-	--bg-alt: #f8fafc;
-	--accent: #0ea5e9;
-	--accent-fg: #ffffff;
-	--border: #e2e8f0;
-	--code-bg: #0f172a;
-	--code-fg: #e2e8f0;
-	--st-idle: #94a3b8;
-	--st-init: #fbbf24;
-	--st-run: #34d399;
-	--st-stopping: #fb923c;
-	--st-stopped: #475569;
-	--st-error: #ef4444;
-	--st-panic: #ec4899;
+	/* Default = canonical Dracula. themes.css overrides via [data-theme="..."]. */
+	--fg: #f8f8f2;
+	--fg-muted: #a4a8c4;
+	--bg: #282a36;
+	--bg-alt: #343746;
+	--accent: #bd93f9;
+	--accent-fg: #282a36;
+	--border: #44475a;
+	--code-bg: #1c1d26;
+	--code-fg: #f8f8f2;
+	--st-idle: #6272a4;
+	--st-init: #f1fa8c;
+	--st-run: #50fa7b;
+	--st-stopping: #ffb86c;
+	--st-stopped: #44475a;
+	--st-error: #ff5555;
+	--st-panic: #ff79c6;
 	--mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	--sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }

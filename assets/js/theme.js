@@ -9,7 +9,7 @@
 	const stored = (() => {
 		try { return localStorage.getItem(KEY); } catch (e) { return null; }
 	})();
-	select.value = stored || 'sky';
+	select.value = stored || 'dracula';
 
 	select.addEventListener('change', () => {
 		const theme = select.value;

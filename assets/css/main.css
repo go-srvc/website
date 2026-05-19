@@ -97,6 +97,18 @@ code { font-size: 0.95rem; }
 .tag { background: var(--bg-alt); border: 1px solid var(--border); padding: 0.1rem 0.5rem; border-radius: 4px; }
 .meta-link { font-family: var(--mono); }
 
+.tag-picker { display: inline-flex; align-items: center; gap: 0.4rem; }
+.tag-picker label { font-size: 0.85rem; }
+.tag-picker select {
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	color: var(--fg);
+	background: var(--bg-alt);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.15rem 0.4rem;
+}
+
 .doc-block { margin: 2rem 0; }
 .doc-block > h2 {
 	font-size: 1.15rem;

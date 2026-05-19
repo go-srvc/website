@@ -18,9 +18,29 @@
 		<a href="https://github.com/go-srvc">GitHub</a>
 	</nav>
 </header>
-<main>
+<div class="layout">
+	<aside class="sidebar">
+		<nav aria-label="Packages">
+			<ul class="tree">
+				{{range .Sidebar}}
+				<li class="section{{if .IsActive}} active{{end}}">
+					<a href="{{.URL}}">{{.Label}}</a>
+					{{if .Items}}
+					<ul>
+						{{range .Items}}
+						<li{{if .IsActive}} class="active"{{end}}><a href="{{.URL}}">{{.Slug}}</a></li>
+						{{end}}
+					</ul>
+					{{end}}
+				</li>
+				{{end}}
+			</ul>
+		</nav>
+	</aside>
+	<main>
 {{template "content" .}}
-</main>
+	</main>
+</div>
 <footer class="site-footer">
 	<p>Apache 2.0 · <a href="https://github.com/go-srvc">github.com/go-srvc</a></p>
 </footer>

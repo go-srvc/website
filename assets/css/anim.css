@@ -33,29 +33,32 @@
 .legend .dot.error    { background: var(--st-error); }
 .legend .dot.panic    { background: var(--st-panic); }
 
-.anim-grid {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 1rem;
-}
-
-@media (max-width: 980px) {
-	.anim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 560px) {
-	.anim-grid { grid-template-columns: 1fr; }
+.anim-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
 }
 
 .anim {
 	margin: 0;
-	padding: 0.85rem;
+	padding: 0.85rem 1rem;
 	background: var(--bg-alt);
 	border: 1px solid var(--border);
 	border-radius: 8px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.5rem;
+	align-items: center;
 }
-.anim h3 { margin: 0 0 0.4rem; font-size: 0.95rem; font-family: var(--mono); }
-.anim figcaption { color: var(--fg-muted); font-size: 0.82rem; margin-top: 0.45rem; line-height: 1.4; }
-.anim svg { display: block; width: 100%; height: auto; max-height: 90px; }
+.anim-vis { min-width: 0; }
+.anim-text { min-width: 0; }
+.anim h3 { margin: 0 0 0.35rem; font-size: 1rem; font-family: var(--mono); }
+.anim p { color: var(--fg-muted); font-size: 0.9rem; margin: 0; line-height: 1.45; }
+.anim svg { display: block; width: 100%; height: auto; }
+
+@media (max-width: 640px) {
+	.anim { grid-template-columns: 1fr; gap: 0.5rem; }
+}
 
 .anim svg .label { fill: var(--fg); font-family: var(--mono); font-size: 11px; }
 .anim svg .box   { stroke: var(--border); stroke-width: 1; fill: var(--st-idle); }

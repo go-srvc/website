@@ -1,177 +1,158 @@
 /*
- * Eight Dracula-flavoured themes. Same dark base across the row; the accent
- * cycles through the canonical Dracula accent set, plus one darker variant.
- * The site's :root in main.css carries the canonical (purple) palette so the
- * page renders correctly before themes.css loads.
+ * Eight noir themes. Same near-black base, varying accents. State colours are
+ * tuned for the noir background (brighter idle, brighter stopped) so the
+ * animation reads clearly. The site :root in main.css carries the canonical
+ * (purple) palette so the page renders correctly before themes.css loads.
  */
 
-[data-theme="dracula"] {
+[data-theme="noir"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #bd93f9;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-pink"] {
+[data-theme="noir-pink"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #ff79c6;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-cyan"] {
+[data-theme="noir-cyan"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #8be9fd;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-green"] {
+[data-theme="noir-green"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #50fa7b;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-orange"] {
+[data-theme="noir-orange"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #ffb86c;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-red"] {
+[data-theme="noir-red"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #ff5555;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-yellow"] {
+[data-theme="noir-yellow"] {
 	--fg: #f8f8f2;
-	--fg-muted: #a4a8c4;
-	--bg: #282a36;
-	--bg-alt: #343746;
+	--fg-muted: #8a8fae;
+	--bg: #15161b;
+	--bg-alt: #1c1d26;
 	--accent: #f1fa8c;
-	--accent-fg: #282a36;
-	--border: #44475a;
-	--code-bg: #1c1d26;
+	--accent-fg: #15161b;
+	--border: #2a2c39;
+	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
 	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #44475a;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }
 
-[data-theme="dracula-noir"] {
+[data-theme="noir-sky"] {
 	--fg: #f8f8f2;
-	--fg-muted: #6272a4;
+	--fg-muted: #8a8fae;
 	--bg: #15161b;
 	--bg-alt: #1c1d26;
-	--accent: #bd93f9;
+	--accent: #7dd3fc;
 	--accent-fg: #15161b;
 	--border: #2a2c39;
 	--code-bg: #0b0b10;
 	--code-fg: #f8f8f2;
-	--st-idle: #4a5277;
+	--st-idle: #6272a4;
 	--st-init: #f1fa8c;
 	--st-run: #50fa7b;
 	--st-stopping: #ffb86c;
-	--st-stopped: #2a2c39;
-	--st-error: #ff5555;
-	--st-panic: #ff79c6;
-}
-
-[data-theme="dracula-noir-cyan"] {
-	--fg: #f8f8f2;
-	--fg-muted: #6272a4;
-	--bg: #15161b;
-	--bg-alt: #1c1d26;
-	--accent: #8be9fd;
-	--accent-fg: #15161b;
-	--border: #2a2c39;
-	--code-bg: #0b0b10;
-	--code-fg: #f8f8f2;
-	--st-idle: #4a5277;
-	--st-init: #f1fa8c;
-	--st-run: #50fa7b;
-	--st-stopping: #ffb86c;
-	--st-stopped: #2a2c39;
+	--st-stopped: #383a4c;
 	--st-error: #ff5555;
 	--st-panic: #ff79c6;
 }

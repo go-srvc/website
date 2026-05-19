@@ -3,14 +3,19 @@
 	<p class="crumbs">
 		<a href="/">go-srvc</a>
 		{{if eq .Pkg.Group "mods"}} / <a href="/mods/">mods</a>{{end}}
-		/ {{.Pkg.Slug}}
+		/ <a href="{{.Pkg.URLPath}}">{{.Pkg.Slug}}</a>
 	</p>
 	<h1>{{.Pkg.ImportPath}}</h1>
-	<p class="meta">
-		<code class="tag">{{.Version}}</code>
+	<div class="meta">
+		<form class="tag-picker">
+			<label for="ver-select">Version</label>
+			<select id="ver-select" onchange="if (this.value) window.location = this.value;">
+				{{range .Versions}}<option value="{{.URL}}"{{if eq .Version $.Version}} selected{{end}}>{{.Version}}{{if .IsLatest}} (latest){{end}}</option>{{end}}
+			</select>
+		</form>
 		<a class="meta-link" href="https://pkg.go.dev/{{.Pkg.ImportPath}}">pkg.go.dev</a>
 		{{if eq .Pkg.Group "srvc"}}<a class="meta-link" href="https://github.com/go-srvc/srvc/tree/{{.Version}}">source</a>{{else}}<a class="meta-link" href="https://github.com/go-srvc/mods/tree/{{.Pkg.Slug}}/{{.Version}}/{{.Pkg.Slug}}">source</a>{{end}}
-	</p>
+	</div>
 	<pre class="install"><code>go get {{.Pkg.ImportPath}}@{{.Version}}</code></pre>
 </section>
 

@@ -26,6 +26,12 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Cache source checkouts
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: source-cache-v1-${{ runner.os }}
+
       - name: Vet
         run: make vet
 

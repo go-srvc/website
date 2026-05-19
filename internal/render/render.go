@@ -33,21 +33,21 @@ func Build(opts Options) error {
 		return fmt.Errorf("mkdir output: %w", err)
 	}
 
-	pkgs, err := fetchAll(opts.Cache)
+	bundles, err := fetchAll(opts.Cache)
 	if err != nil {
 		return fmt.Errorf("fetch packages: %w", err)
 	}
 
-	if err := renderIndex(opts.Out, pkgs); err != nil {
+	if err := renderIndex(opts.Out, bundles); err != nil {
 		return fmt.Errorf("render index: %w", err)
 	}
-	if len(pkgs) > 0 {
-		if err := renderModsCatalog(opts.Out, pkgs); err != nil {
+	if len(bundles) > 0 {
+		if err := renderModsCatalog(opts.Out, bundles); err != nil {
 			return fmt.Errorf("render mods catalog: %w", err)
 		}
-		for _, p := range pkgs {
-			if err := renderPackage(opts.Out, p); err != nil {
-				return fmt.Errorf("render %s: %w", p.Pkg.Slug, err)
+		for _, b := range bundles {
+			if err := renderPackage(opts.Out, b); err != nil {
+				return fmt.Errorf("render %s: %w", b.Pkg.Slug, err)
 			}
 		}
 	}
@@ -61,18 +61,19 @@ func Build(opts Options) error {
 	return nil
 }
 
-// rendered pairs a catalog entry with its resolved version and parsed docs.
-type rendered struct {
-	Pkg     catalog.Pkg
-	Version string
-	Doc     *docparse.Package
+// bundle groups a catalog entry with every tagged version's parsed docs.
+type bundle struct {
+	Pkg      catalog.Pkg
+	Latest   string
+	Versions []string // sorted highest semver first; same order rendered in dropdown
+	Docs     map[string]*docparse.Package
 }
 
-func fetchAll(cache string) ([]rendered, error) {
+func fetchAll(cache string) ([]bundle, error) {
 	if cache == "" {
 		return nil, nil
 	}
-	out := make([]rendered, 0, len(catalog.All))
+	out := make([]bundle, 0, len(catalog.All))
 	for _, p := range catalog.All {
 		versions, err := p.Versions()
 		if err != nil {
@@ -82,13 +83,21 @@ func fetchAll(cache string) ([]rendered, error) {
 			slog.Warn("no tags found, skipping", slog.String("pkg", p.Slug))
 			continue
 		}
-		latest := versions[0]
-		slog.Info("fetching package", slog.String("pkg", p.Slug), slog.String("version", latest))
-		doc, err := p.Fetch(cache, latest)
-		if err != nil {
-			return nil, fmt.Errorf("fetch %s@%s: %w", p.Slug, latest, err)
+		b := bundle{
+			Pkg:      p,
+			Latest:   versions[0],
+			Versions: versions,
+			Docs:     make(map[string]*docparse.Package, len(versions)),
 		}
-		out = append(out, rendered{Pkg: p, Version: latest, Doc: doc})
+		for _, v := range versions {
+			slog.Info("fetching", slog.String("pkg", p.Slug), slog.String("version", v))
+			doc, err := p.Fetch(cache, v)
+			if err != nil {
+				return nil, fmt.Errorf("fetch %s@%s: %w", p.Slug, v, err)
+			}
+			b.Docs[v] = doc
+		}
+		out = append(out, b)
 	}
 	return out, nil
 }
@@ -100,10 +109,22 @@ type indexData struct {
 	ModCount    int
 }
 
+type modsCard struct {
+	Pkg     catalog.Pkg
+	Version string
+	Doc     *docparse.Package
+}
+
 type modsData struct {
 	Title       string
 	Description string
-	Mods        []rendered
+	Mods        []modsCard
+}
+
+type versionLink struct {
+	Version  string
+	URL      string
+	IsLatest bool
 }
 
 type pkgData struct {
@@ -111,6 +132,8 @@ type pkgData struct {
 	Description string
 	Pkg         catalog.Pkg
 	Version     string
+	IsLatest    bool
+	Versions    []versionLink
 	Doc         *docparse.Package
 	DocHTML     template.HTML
 	ReadmeHTML  template.HTML
@@ -125,15 +148,15 @@ type pkgSections struct {
 	HasEx     bool
 }
 
-func renderIndex(out string, pkgs []rendered) error {
+func renderIndex(out string, bundles []bundle) error {
 	data := indexData{
 		Title:       "go-srvc · Simple, Safe, Modular Service Runner",
 		Description: "A tiny Go library for composing service modules with a clean lifecycle.",
 	}
-	for _, p := range pkgs {
-		switch p.Pkg.Group {
+	for _, b := range bundles {
+		switch b.Pkg.Group {
 		case "srvc":
-			data.SrvcVersion = p.Version
+			data.SrvcVersion = b.Latest
 		case "mods":
 			data.ModCount++
 		}
@@ -142,8 +165,18 @@ func renderIndex(out string, pkgs []rendered) error {
 	return writeTemplate(tmpl, filepath.Join(out, "index.html"), data)
 }
 
-func renderModsCatalog(out string, pkgs []rendered) error {
-	mods := filterGroup(pkgs, "mods")
+func renderModsCatalog(out string, bundles []bundle) error {
+	var mods []modsCard
+	for _, b := range bundles {
+		if b.Pkg.Group != "mods" {
+			continue
+		}
+		mods = append(mods, modsCard{
+			Pkg:     b.Pkg,
+			Version: b.Latest,
+			Doc:     b.Docs[b.Latest],
+		})
+	}
 	if len(mods) == 0 {
 		return nil
 	}
@@ -155,42 +188,61 @@ func renderModsCatalog(out string, pkgs []rendered) error {
 	})
 }
 
-func renderPackage(out string, r rendered) error {
+func renderPackage(out string, b bundle) error {
 	tmpl := mustParse("templates/layout.html.tmpl", "templates/package.html.tmpl")
-	path := filepath.Join(out, r.Pkg.Group)
-	if r.Pkg.Slug != r.Pkg.Group {
-		path = filepath.Join(path, r.Pkg.Slug)
+	base := filepath.Join(out, b.Pkg.Group)
+	if b.Pkg.Slug != b.Pkg.Group {
+		base = filepath.Join(base, b.Pkg.Slug)
 	}
-	if err := os.MkdirAll(path, 0o755); err != nil {
-		return err
-	}
-	data := pkgData{
-		Title:       fmt.Sprintf("%s · go-srvc", r.Pkg.ImportPath),
-		Description: firstSentence(r.Doc.Doc),
-		Pkg:         r.Pkg,
-		Version:     r.Version,
-		Doc:         r.Doc,
-		DocHTML:     godocHTML(r.Doc.Doc),
-		ReadmeHTML:  markdownHTML(r.Doc.Readme),
-		Sections: pkgSections{
-			HasConsts: len(r.Doc.Consts) > 0,
-			HasVars:   len(r.Doc.Vars) > 0,
-			HasFuncs:  len(r.Doc.Funcs) > 0,
-			HasTypes:  len(r.Doc.Types) > 0,
-			HasEx:     len(r.Doc.Examples) > 0,
-		},
-	}
-	return writeTemplate(tmpl, filepath.Join(path, "index.html"), data)
-}
 
-func filterGroup(pkgs []rendered, group string) []rendered {
-	var out []rendered
-	for _, p := range pkgs {
-		if p.Pkg.Group == group {
-			out = append(out, p)
+	versions := make([]versionLink, 0, len(b.Versions))
+	for _, v := range b.Versions {
+		versions = append(versions, versionLink{
+			Version:  v,
+			URL:      packageURL(b.Pkg) + v + "/",
+			IsLatest: v == b.Latest,
+		})
+	}
+
+	for _, v := range b.Versions {
+		doc := b.Docs[v]
+		isLatest := v == b.Latest
+		data := pkgData{
+			Title:       fmt.Sprintf("%s@%s · go-srvc", b.Pkg.ImportPath, v),
+			Description: firstSentence(doc.Doc),
+			Pkg:         b.Pkg,
+			Version:     v,
+			IsLatest:    isLatest,
+			Versions:    versions,
+			Doc:         doc,
+			DocHTML:     godocHTML(doc.Doc),
+			ReadmeHTML:  markdownHTML(doc.Readme),
+			Sections: pkgSections{
+				HasConsts: len(doc.Consts) > 0,
+				HasVars:   len(doc.Vars) > 0,
+				HasFuncs:  len(doc.Funcs) > 0,
+				HasTypes:  len(doc.Types) > 0,
+				HasEx:     len(doc.Examples) > 0,
+			},
+		}
+
+		if err := writeTemplate(tmpl, filepath.Join(base, v, "index.html"), data); err != nil {
+			return err
+		}
+		if isLatest {
+			if err := writeTemplate(tmpl, filepath.Join(base, "index.html"), data); err != nil {
+				return err
+			}
 		}
 	}
-	return out
+	return nil
+}
+
+func packageURL(p catalog.Pkg) string {
+	if p.Slug == p.Group {
+		return "/" + p.Group + "/"
+	}
+	return "/" + p.Group + "/" + p.Slug + "/"
 }
 
 func mustParse(paths ...string) *template.Template {

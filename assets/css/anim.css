@@ -1,17 +1,8 @@
 /*
  * Lifecycle scenarios shown as simultaneous animated panels.
  * Each panel runs a 10s cycle on four module boxes (M1-M4).
+ * State colors are defined per-theme in themes.css.
  */
-
-:root {
-	--st-idle:     #94a3b8;
-	--st-init:     #fbbf24;
-	--st-run:      #34d399;
-	--st-stopping: #fb923c;
-	--st-stopped:  #475569;
-	--st-error:    #ef4444;
-	--st-panic:    #ec4899;
-}
 
 .lifecycle { margin: 2rem 0; }
 .lifecycle h2 { font-size: 1.4rem; margin: 0 0 0.4rem; }

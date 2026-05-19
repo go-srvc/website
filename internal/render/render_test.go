@@ -9,17 +9,16 @@ import (
 	"github.com/go-srvc/website/internal/render"
 )
 
-func TestBuild(t *testing.T) {
+func TestBuild_StaticOnly(t *testing.T) {
 	dir := t.TempDir()
 
-	// Run from the website repo root so assets/static dirs are found.
 	cwd, _ := os.Getwd()
 	t.Cleanup(func() { _ = os.Chdir(cwd) })
 	if err := os.Chdir(filepath.Join(cwd, "..", "..")); err != nil {
 		t.Fatalf("chdir: %v", err)
 	}
 
-	if err := render.Build(dir); err != nil {
+	if err := render.Build(render.Options{Out: dir}); err != nil {
 		t.Fatalf("Build: %v", err)
 	}
 

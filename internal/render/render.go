@@ -11,12 +11,25 @@ import (
 	"path/filepath"
 	"strings"
 
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
+
 	"github.com/go-srvc/website/internal/catalog"
 	"github.com/go-srvc/website/internal/docparse"
 )
 
 //go:embed templates/*.html.tmpl
 var templatesFS embed.FS
+
+// examplePath is read at build time, relative to the website module root.
+// Callers (cmd/gen and render tests) must invoke Build with that as cwd.
+const examplePath = "internal/render/example/main.go"
+
+var (
+	chromaStyle     = styles.Get("dracula")
+	chromaFormatter = chromahtml.New(chromahtml.WithClasses(true), chromahtml.TabWidth(4))
+)
 
 // Options configures a site build.
 type Options struct {
@@ -58,7 +71,35 @@ func Build(opts Options) error {
 	if err := copyTree("static", opts.Out); err != nil {
 		return fmt.Errorf("copy static: %w", err)
 	}
+	if err := writeSyntaxCSS(opts.Out); err != nil {
+		return fmt.Errorf("write syntax css: %w", err)
+	}
 	return nil
+}
+
+func highlightGo(src string) template.HTML {
+	iter, err := lexers.Get("go").Tokenise(nil, src)
+	if err != nil {
+		return template.HTML(template.HTMLEscapeString(src))
+	}
+	var buf strings.Builder
+	if err := chromaFormatter.Format(&buf, chromaStyle, iter); err != nil {
+		return template.HTML(template.HTMLEscapeString(src))
+	}
+	return template.HTML(buf.String())
+}
+
+func writeSyntaxCSS(out string) error {
+	dst := filepath.Join(out, "assets", "css", "syntax.css")
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	f, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return chromaFormatter.WriteCSS(f, chromaStyle)
 }
 
 // bundle groups a catalog entry with every tagged version's parsed docs.
@@ -102,12 +143,27 @@ func fetchAll(cache string) ([]bundle, error) {
 	return out, nil
 }
 
+type sidebarItem struct {
+	Slug     string
+	URL      string // relative to the page being rendered
+	IsActive bool
+}
+
+type sidebarSection struct {
+	Label    string
+	URL      string
+	IsActive bool
+	Items    []sidebarItem
+}
+
 type indexData struct {
 	Title       string
 	Description string
 	RelPrefix   string
+	Sidebar     []sidebarSection
 	SrvcVersion string
 	ModCount    int
+	ExampleHTML template.HTML
 }
 
 type modsCard struct {
@@ -120,6 +176,7 @@ type modsData struct {
 	Title       string
 	Description string
 	RelPrefix   string
+	Sidebar     []sidebarSection
 	Mods        []modsCard
 }
 
@@ -133,6 +190,7 @@ type pkgData struct {
 	Title       string
 	Description string
 	RelPrefix   string
+	Sidebar     []sidebarSection
 	Pkg         catalog.Pkg
 	Version     string
 	IsLatest    bool
@@ -152,10 +210,16 @@ type pkgSections struct {
 }
 
 func renderIndex(out string, bundles []bundle) error {
+	example, err := os.ReadFile(examplePath)
+	if err != nil {
+		return fmt.Errorf("read example: %w", err)
+	}
 	data := indexData{
 		Title:       "go-srvc · Simple, Safe, Modular Service Runner",
 		Description: "A tiny Go library for composing service modules with a clean lifecycle.",
 		RelPrefix:   "",
+		Sidebar:     buildSidebar("", "", ""),
+		ExampleHTML: highlightGo(string(example)),
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {
@@ -189,6 +253,7 @@ func renderModsCatalog(out string, bundles []bundle) error {
 		Title:       "Mods · go-srvc",
 		Description: "Ready-made srvc modules: HTTP, SQL, OpenTelemetry, signal, ticker.",
 		RelPrefix:   "../",
+		Sidebar:     buildSidebar("../", "mods", ""),
 		Mods:        mods,
 	})
 }
@@ -236,6 +301,7 @@ func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefi
 		Title:       fmt.Sprintf("%s@%s · go-srvc", b.Pkg.ImportPath, v),
 		Description: firstSentence(doc.Doc),
 		RelPrefix:   prefix,
+		Sidebar:     buildSidebar(prefix, b.Pkg.Group, b.Pkg.Slug),
 		Pkg:         b.Pkg,
 		Version:     v,
 		IsLatest:    isLatest,
@@ -262,6 +328,51 @@ func relPrefix(outputPath, root string) string {
 	}
 	depth := strings.Count(rel, string(filepath.Separator)) + 1
 	return strings.Repeat("../", depth)
+}
+
+// buildSidebar returns the package tree shown in the layout. URLs are emitted
+// relative to a page with the given prefix. The active section/item is the one
+// matching activeGroup and (when set) activeSlug.
+func buildSidebar(prefix, activeGroup, activeSlug string) []sidebarSection {
+	type build struct {
+		section *sidebarSection
+		index   int
+	}
+	byGroup := map[string]*build{}
+	var order []string
+
+	for _, p := range catalog.All {
+		b, ok := byGroup[p.Group]
+		if !ok {
+			b = &build{
+				section: &sidebarSection{
+					Label: p.Group,
+					URL:   prefix + p.Group + "/",
+				},
+				index: len(order),
+			}
+			byGroup[p.Group] = b
+			order = append(order, p.Group)
+		}
+		if p.Group == p.Slug {
+			continue
+		}
+		b.section.Items = append(b.section.Items, sidebarItem{
+			Slug:     p.Slug,
+			URL:      prefix + p.URLPath(),
+			IsActive: p.Group == activeGroup && p.Slug == activeSlug,
+		})
+	}
+
+	out := make([]sidebarSection, len(order))
+	for _, name := range order {
+		sec := byGroup[name].section
+		if name == activeGroup {
+			sec.IsActive = true
+		}
+		out[byGroup[name].index] = *sec
+	}
+	return out
 }
 
 func mustParse(paths ...string) *template.Template {

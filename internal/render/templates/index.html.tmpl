@@ -1,28 +1,53 @@
 {{define "anim-svg"}}
 <svg viewBox="0 0 280 60" aria-hidden="true" role="img">
-	<rect class="box m1" x="20" y="10" width="60" height="40" rx="4"/>
-	<rect class="box m2" x="110" y="10" width="60" height="40" rx="4"/>
-	<rect class="box m3" x="200" y="10" width="60" height="40" rx="4"/>
-	<text class="label" x="50" y="36" text-anchor="middle">M1</text>
-	<text class="label" x="140" y="36" text-anchor="middle">M2</text>
-	<text class="label" x="230" y="36" text-anchor="middle">M3</text>
+	<rect class="box m1" x="10" y="10" width="55" height="40" rx="4"/>
+	<rect class="box m2" x="75" y="10" width="55" height="40" rx="4"/>
+	<rect class="box m3" x="140" y="10" width="55" height="40" rx="4"/>
+	<rect class="box m4" x="205" y="10" width="55" height="40" rx="4"/>
+	<text class="label" x="37" y="35" text-anchor="middle">M1</text>
+	<text class="label" x="102" y="35" text-anchor="middle">M2</text>
+	<text class="label" x="167" y="35" text-anchor="middle">M3</text>
+	<text class="label" x="232" y="35" text-anchor="middle">M4</text>
 </svg>
 {{end}}
 
 {{define "content"}}
 <section class="hero">
-	<h1>Simple, Safe, Modular Service Runner</h1>
+	<h1>Service Runner: Simple Safe Modular</h1>
 	<p class="tagline">{{.Description}}</p>
-	<pre class="install"><code>go get github.com/go-srvc/srvc</code></pre>
+	<pre class="install"><code>go get github.com/go-srvc/srvc@latest</code></pre>
 	<p class="hero-links">
 		<a class="btn" href="{{.RelPrefix}}srvc/">srvc docs</a>
 		<a class="btn btn-secondary" href="{{.RelPrefix}}mods/">mods catalog</a>
 	</p>
 </section>
 
+<section class="why">
+	<h2>Why srvc?</h2>
+	<p class="lead">Real services run multiple long-lived components (HTTP, DB, signals, telemetry). Wiring up their startup order, graceful shutdown, panic recovery, and error reporting by hand is repetitive and easy to get wrong.</p>
+	<div class="why-grid">
+		<div class="why-item">
+			<h3>One small interface</h3>
+			<p>Every module implements <code>Init</code>, <code>Run</code>, <code>Stop</code>, and <code>ID</code>. The runner sequences and supervises them so your <code>main</code> stays a list of components.</p>
+		</div>
+		<div class="why-item">
+			<h3>Safe shutdown</h3>
+			<p>Panics are recovered. Errors from Init, Run, and Stop are aggregated. Stop runs in reverse order on every initialised module, even when something failed mid-flight.</p>
+		</div>
+		<div class="why-item">
+			<h3>Zero deps in core</h3>
+			<p>The <code>srvc</code> package is standard library only. Pull in just the modules you need from <code>go-srvc/mods</code>: HTTP, SQL, OpenTelemetry, signals, tickers.</p>
+		</div>
+		<div class="why-item">
+			<h3>No zombie services</h3>
+			<p>When any Run returns, the whole service shuts down. Pair with <code>sigmod</code> for clean SIGINT and SIGTERM handling, and let <code>RunAndExit</code> drop the exit code.</p>
+		</div>
+	</div>
+</section>
+
 <section class="lifecycle">
 	<h2>Lifecycle, visualized</h2>
-	<p class="lead">Each panel shows the same three modules going through srvc's lifecycle under a different scenario. All animate continuously.</p>
+	<p class="lead">Four modules going through srvc's lifecycle under different scenarios. One row plays at a time; hover any row to lock the animation to it.</p>
 	<div class="legend" aria-hidden="true">
 		<span class="item"><span class="dot"></span>idle</span>
 		<span class="item"><span class="dot init"></span>init</span>
@@ -33,28 +58,35 @@
 		<span class="item"><span class="dot panic"></span>panic</span>
 	</div>
 
-	<div class="anim-grid">
+	<div class="anim-list">
 		<figure class="anim anim-clean">
-			<h3>Clean shutdown</h3>
-			{{template "anim-svg" .}}
-			<figcaption>Signal triggers shutdown. Modules stop in reverse order.</figcaption>
+			<div class="anim-text">
+				<h3>Clean shutdown</h3>
+				<p>Signal triggers shutdown. Modules stop in reverse order.</p>
+			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 		<figure class="anim anim-init">
-			<h3>Init error</h3>
-			{{template "anim-svg" .}}
-			<figcaption>M2's Init fails. Only M1, the already-initialised module, gets Stop. M3 never starts.</figcaption>
+			<div class="anim-text">
+				<h3>Init error</h3>
+				<p>M3's Init fails. M1 and M2, the already-initialised modules, get Stop in reverse. M4 never starts.</p>
+			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 		<figure class="anim anim-panic">
-			<h3>Panic recovery</h3>
-			{{template "anim-svg" .}}
-			<figcaption>M2 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</figcaption>
-		</figure>
-		<figure class="anim anim-timeout">
-			<h3>Stop timeout</h3>
-			{{template "anim-svg" .}}
-			<figcaption>M2's Stop hangs. <code>StopTimeout</code> fires; Run returns with <code>ErrStopTimeout</code>.</figcaption>
+			<div class="anim-text">
+				<h3>Panic recovery</h3>
+				<p>M3 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</p>
+			</div>
+			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>
 	</div>
+</section>
+
+<section class="example">
+	<h2>A practical example</h2>
+	<p class="lead">A full HTTP service with structured logging via OpenTelemetry, distributed tracing, a Postgres pool, and graceful shutdown on <code>SIGINT</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative.</p>
+	{{.ExampleHTML}}
 </section>
 
 <section class="cards">

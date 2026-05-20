@@ -35,6 +35,12 @@ jobs:
       - name: Vet
         run: make vet
 
+      - name: Format check example
+        run: make example-fmt
+
+      - name: Build example
+        run: make example-build
+
       - name: Test
         run: make test
 

@@ -22,6 +22,18 @@
 	</p>
 </section>
 
+<section class="issue">
+	<h2>The issue</h2>
+	<p class="lead">Real services run multiple long-lived components in parallel: HTTP server, database pool, signal listener, telemetry exporters, tickers. Wiring up startup order, graceful shutdown, panic recovery, and error reporting by hand is repetitive and easy to get wrong.</p>
+	<figure class="anim anim-broken active issue-anim">
+		<div class="anim-text">
+			<h3>Without coordination</h3>
+			<p>Four components launched as goroutines from <code>main</code>. M2 panics. Nothing catches it. The others keep running until the process is forcibly killed. Stop is never called. Resources leak.</p>
+		</div>
+		<div class="anim-vis">{{template "anim-svg" .}}</div>
+	</figure>
+</section>
+
 <section class="why">
 	<h2>Why srvc?</h2>
 	<div class="why-grid">

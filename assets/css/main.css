@@ -142,7 +142,8 @@ code { font-size: 0.95rem; }
 .example .lead { color: var(--fg-muted); max-width: 48rem; margin: 0 0 1rem; }
 .example .lead code { color: var(--fg); background: var(--bg-alt); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.9em; }
 
-.example .chroma {
+/* All chroma blocks share the same background; specific contexts adjust padding. */
+body .chroma {
 	background: var(--code-bg);
 	color: var(--code-fg);
 	border-radius: 6px;
@@ -191,13 +192,8 @@ code { font-size: 0.95rem; }
 .decl h3 { font-family: var(--mono); font-size: 1rem; margin: 0 0 0.5rem; }
 .decl h4 { font-family: var(--mono); font-size: 0.95rem; margin: 0.8rem 0 0.4rem; color: var(--fg-muted); }
 .sig .chroma {
-	background: var(--bg-alt);
-	color: var(--fg);
-	border: 1px solid var(--border);
-	border-radius: 4px;
 	padding: 0.5rem 0.75rem;
-	font-size: 0.85rem;
-	overflow-x: auto;
+	border-radius: 4px;
 }
 .method { margin-left: 1rem; padding-left: 0.75rem; border-left: 2px solid var(--border); border-top: none; }
 

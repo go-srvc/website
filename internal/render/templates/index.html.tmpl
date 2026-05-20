@@ -67,6 +67,37 @@
 	</div>
 </section>
 
+<section class="example">
+	<h2>A practical example</h2>
+	<p class="lead">An HTTP server that shuts down cleanly on <code>SIGINT</code>. <code>srvc.Run</code> coordinates the lifecycle of the signal listener and the server. Either module returning ends the run loop, and Stop runs in reverse on the way out.</p>
+	<pre class="example-code"><code>package main
+
+import (
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/go-srvc/mods/httpmod"
+	"github.com/go-srvc/mods/sigmod"
+	"github.com/go-srvc/srvc"
+)
+
+func main() {
+	srvc.RunAndExit(
+		sigmod.New(os.Interrupt),
+		httpmod.New(
+			httpmod.WithAddr(":8080"),
+			httpmod.WithHandler(http.HandlerFunc(hello)),
+		),
+	)
+}
+
+func hello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "hello, world")
+}
+</code></pre>
+</section>
+
 <section class="cards">
 	<article class="card">
 		<h2><a href="{{.RelPrefix}}srvc/">srvc</a></h2>

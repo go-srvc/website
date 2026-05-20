@@ -31,7 +31,7 @@
 	<h2>Constants</h2>
 	{{range .Doc.Consts}}
 	<div class="decl">
-		<pre class="sig"><code>{{.Signature}}</code></pre>
+		<div class="sig">{{hl .Signature}}</div>
 		{{if .Doc}}{{godoc .Doc}}{{end}}
 	</div>
 	{{end}}
@@ -43,7 +43,7 @@
 	<h2>Variables</h2>
 	{{range .Doc.Vars}}
 	<div class="decl">
-		<pre class="sig"><code>{{.Signature}}</code></pre>
+		<div class="sig">{{hl .Signature}}</div>
 		{{if .Doc}}{{godoc .Doc}}{{end}}
 	</div>
 	{{end}}
@@ -56,7 +56,7 @@
 	{{range .Doc.Funcs}}
 	<div class="decl" id="fn-{{.Name}}">
 		<h3>func {{.Name}}</h3>
-		<pre class="sig"><code>{{.Signature}}</code></pre>
+		<div class="sig">{{hl .Signature}}</div>
 		{{if .Doc}}{{godoc .Doc}}{{end}}
 	</div>
 	{{end}}
@@ -69,12 +69,12 @@
 	{{range .Doc.Types}}
 	<div class="decl" id="type-{{.Name}}">
 		<h3>type {{.Name}}</h3>
-		<pre class="sig"><code>{{.Signature}}</code></pre>
+		<div class="sig">{{hl .Signature}}</div>
 		{{if .Doc}}{{godoc .Doc}}{{end}}
 		{{range .Methods}}
 		<div class="decl method" id="method-{{.Recv}}-{{.Name}}">
 			<h4>func ({{.Recv}}) {{.Name}}</h4>
-			<pre class="sig"><code>{{.Signature}}</code></pre>
+			<div class="sig">{{hl .Signature}}</div>
 			{{if .Doc}}{{godoc .Doc}}{{end}}
 		</div>
 		{{end}}
@@ -90,7 +90,7 @@
 	<div class="example" id="ex-{{.Name}}">
 		<h3>{{.Name}}</h3>
 		{{if .Doc}}{{godoc .Doc}}{{end}}
-		<pre class="code"><code>{{.Code}}</code></pre>
+		<div class="code">{{hl .Code}}</div>
 	</div>
 	{{end}}
 </section>

@@ -11,6 +11,7 @@ import (
 var funcs = template.FuncMap{
 	"godoc":    godocHTML,
 	"markdown": markdownHTML,
+	"hl":       highlightGo,
 }
 
 func godocHTML(src string) template.HTML {

@@ -5,7 +5,9 @@ import (
 	"go/doc/comment"
 	"html/template"
 
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 )
 
 var funcs = template.FuncMap{
@@ -13,6 +15,18 @@ var funcs = template.FuncMap{
 	"markdown": markdownHTML,
 	"hl":       highlightGo,
 }
+
+var markdown = goldmark.New(
+	goldmark.WithExtensions(
+		highlighting.NewHighlighting(
+			highlighting.WithStyle("dracula"),
+			highlighting.WithFormatOptions(
+				chromahtml.WithClasses(true),
+				chromahtml.TabWidth(4),
+			),
+		),
+	),
+)
 
 func godocHTML(src string) template.HTML {
 	if src == "" {
@@ -29,7 +43,7 @@ func markdownHTML(src string) template.HTML {
 		return ""
 	}
 	var buf bytes.Buffer
-	if err := goldmark.New().Convert([]byte(src), &buf); err != nil {
+	if err := markdown.Convert([]byte(src), &buf); err != nil {
 		return template.HTML(template.HTMLEscapeString(src))
 	}
 	return template.HTML(buf.String())

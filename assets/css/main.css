@@ -119,13 +119,9 @@ code { font-size: 0.95rem; }
 	border-radius: 999px;
 }
 
-.issue { margin: 2rem 0; }
-.issue h2 { font-size: 1.4rem; margin: 0 0 0.4rem; }
-.issue .lead { color: var(--fg-muted); max-width: 48rem; margin: 0 0 1rem; }
-.issue .lead code { color: var(--fg); background: var(--bg-alt); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.9em; }
-
 .why { margin: 2rem 0; }
-.why h2 { font-size: 1.4rem; margin: 0 0 1rem; }
+.why h2 { font-size: 1.4rem; margin: 0 0 0.4rem; }
+.why .lead { color: var(--fg-muted); max-width: 48rem; margin: 0 0 1rem; }
 .why-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .why-item {
 	background: var(--bg-alt);

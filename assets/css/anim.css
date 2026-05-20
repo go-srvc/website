@@ -192,36 +192,6 @@
 	58%, 100% { fill: var(--st-stopped); }
 }
 
-/* Issue panel: no JS rotation, always active, faster cycle to drive the point home. */
-.issue-anim { animation-duration: 7s; }
-.issue-anim .m1, .issue-anim .m2, .issue-anim .m3, .issue-anim .m4 { animation-duration: 7s; }
-.anim.active.anim-broken .m1 { animation-name: broken-m1; }
-.anim.active.anim-broken .m2 { animation-name: broken-m2; }
-.anim.active.anim-broken .m3 { animation-name: broken-m3; }
-.anim.active.anim-broken .m4 { animation-name: broken-m4; }
-
-@keyframes broken-m1 {
-	0%, 4%    { fill: var(--st-idle); }
-	5%, 9%    { fill: var(--st-init); }
-	10%, 100% { fill: var(--st-run); }
-}
-@keyframes broken-m2 {
-	0%, 9%    { fill: var(--st-idle); }
-	10%, 14%  { fill: var(--st-init); }
-	15%, 49%  { fill: var(--st-run); }
-	50%, 100% { fill: var(--st-panic); }
-}
-@keyframes broken-m3 {
-	0%, 14%   { fill: var(--st-idle); }
-	15%, 19%  { fill: var(--st-init); }
-	20%, 100% { fill: var(--st-run); }
-}
-@keyframes broken-m4 {
-	0%, 19%   { fill: var(--st-idle); }
-	20%, 24%  { fill: var(--st-init); }
-	25%, 100% { fill: var(--st-run); }
-}
-
 @media (prefers-reduced-motion: reduce) {
 	.anim svg .m1, .anim svg .m2, .anim svg .m3, .anim svg .m4 {
 		animation: none;

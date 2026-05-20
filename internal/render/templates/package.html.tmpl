@@ -19,6 +19,13 @@
 	<pre class="install"><code>go get {{.Pkg.ImportPath}}@{{.Version}}</code></pre>
 </section>
 
+{{if .ReadmeHTML}}
+<section class="doc-block readme">
+	<h2>README</h2>
+	{{.ReadmeHTML}}
+</section>
+{{end}}
+
 {{if .DocHTML}}
 <section class="doc-block">
 	<h2>Overview</h2>
@@ -96,10 +103,4 @@
 </section>
 {{end}}
 
-{{if .ReadmeHTML}}
-<section class="doc-block readme">
-	<h2>README</h2>
-	{{.ReadmeHTML}}
-</section>
-{{end}}
 {{end}}

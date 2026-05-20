@@ -5,12 +5,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="{{.Description}}">
 	<title>{{.Title}}</title>
-	<script>(function(){try{var t=localStorage.getItem('go-srvc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 	<link rel="stylesheet" href="{{.RelPrefix}}assets/css/main.css">
-	<link rel="stylesheet" href="{{.RelPrefix}}assets/css/themes.css">
 	<link rel="stylesheet" href="{{.RelPrefix}}assets/css/anim.css">
 	<script src="{{.RelPrefix}}assets/js/lifecycle.js" defer></script>
-	<script src="{{.RelPrefix}}assets/js/theme.js" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -40,19 +37,6 @@
 				{{end}}
 			</ul>
 		</nav>
-		<div class="theme-picker">
-			<label for="theme-select">Theme</label>
-			<select id="theme-select">
-				<option value="noir">Noir (purple)</option>
-				<option value="noir-pink">Noir Pink</option>
-				<option value="noir-cyan">Noir Cyan</option>
-				<option value="noir-green">Noir Green</option>
-				<option value="noir-orange">Noir Orange</option>
-				<option value="noir-red">Noir Red</option>
-				<option value="noir-yellow">Noir Yellow</option>
-				<option value="noir-sky">Noir Sky</option>
-			</select>
-		</div>
 	</aside>
 	<main>
 {{template "content" .}}

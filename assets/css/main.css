@@ -1,10 +1,9 @@
 :root {
-	/* Default = canonical Noir. themes.css overrides via [data-theme="..."]. */
 	--fg: #f8f8f2;
 	--fg-muted: #8a8fae;
 	--bg: #15161b;
 	--bg-alt: #1c1d26;
-	--accent: #bd93f9;
+	--accent: #7dd3fc;
 	--accent-fg: #15161b;
 	--border: #2a2c39;
 	--code-bg: #0b0b10;
@@ -55,18 +54,6 @@ a:hover { text-decoration: underline; }
 main { min-width: 0; }
 
 .sidebar { position: sticky; top: 1rem; align-self: start; font-size: 0.92rem; }
-.theme-picker { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; }
-.theme-picker label { display: block; color: var(--fg-muted); margin: 0 0 0.3rem; }
-.theme-picker select {
-	width: 100%;
-	font-family: var(--mono);
-	font-size: 0.85rem;
-	color: var(--fg);
-	background: var(--bg-alt);
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	padding: 0.2rem 0.4rem;
-}
 .sidebar .tree { list-style: none; padding: 0; margin: 0; }
 .sidebar .tree li { line-height: 1.7; }
 .sidebar .tree ul { list-style: none; padding-left: 0.9rem; margin: 0.1rem 0 0.4rem; border-left: 1px solid var(--border); }

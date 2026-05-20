@@ -40,7 +40,7 @@
 		</div>
 		<div class="why-item">
 			<h3>No zombie services</h3>
-			<p>When any Run returns, the whole service shuts down. Optional <code>StopTimeout</code> bounds the wait if a module hangs, so the process never gets stuck half-up.</p>
+			<p>When any Run returns, the whole service shuts down. Pair with <code>sigmod</code> for clean SIGINT and SIGTERM handling, and let <code>RunAndExit</code> drop the exit code.</p>
 		</div>
 	</div>
 </section>
@@ -77,13 +77,6 @@
 			<div class="anim-text">
 				<h3>Panic recovery</h3>
 				<p>M3 panics during Run. The panic is recovered as an error and the rest shut down gracefully.</p>
-			</div>
-			<div class="anim-vis">{{template "anim-svg" .}}</div>
-		</figure>
-		<figure class="anim anim-timeout">
-			<div class="anim-text">
-				<h3>Stop timeout</h3>
-				<p>M3's Stop hangs. <code>StopTimeout</code> fires and Run returns with <code>ErrStopTimeout</code>. Remaining stops never complete.</p>
 			</div>
 			<div class="anim-vis">{{template "anim-svg" .}}</div>
 		</figure>

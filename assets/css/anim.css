@@ -161,37 +161,6 @@
 	58%, 100% { fill: var(--st-stopped); }
 }
 
-/* Stop timeout: M3's Stop hangs, ErrStopTimeout fires, the remaining stops never complete. */
-.anim.active.anim-timeout .m1 { animation-name: timeout-m1; }
-.anim.active.anim-timeout .m2 { animation-name: timeout-m2; }
-.anim.active.anim-timeout .m3 { animation-name: timeout-m3; }
-.anim.active.anim-timeout .m4 { animation-name: timeout-m4; }
-
-@keyframes timeout-m1 {
-	0%, 4%    { fill: var(--st-idle); }
-	5%, 9%    { fill: var(--st-init); }
-	10%, 100% { fill: var(--st-run); }
-}
-@keyframes timeout-m2 {
-	0%, 9%    { fill: var(--st-idle); }
-	10%, 14%  { fill: var(--st-init); }
-	15%, 100% { fill: var(--st-run); }
-}
-@keyframes timeout-m3 {
-	0%, 14%   { fill: var(--st-idle); }
-	15%, 19%  { fill: var(--st-init); }
-	20%, 57%  { fill: var(--st-run); }
-	58%, 79%  { fill: var(--st-stopping); }
-	80%, 100% { fill: var(--st-error); }
-}
-@keyframes timeout-m4 {
-	0%, 19%   { fill: var(--st-idle); }
-	20%, 24%  { fill: var(--st-init); }
-	25%, 49%  { fill: var(--st-run); }
-	50%, 57%  { fill: var(--st-stopping); }
-	58%, 100% { fill: var(--st-stopped); }
-}
-
 @media (prefers-reduced-motion: reduce) {
 	.anim svg .m1, .anim svg .m2, .anim svg .m3, .anim svg .m4 {
 		animation: none;

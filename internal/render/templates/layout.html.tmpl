@@ -5,6 +5,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="{{.Description}}">
 	<title>{{.Title}}</title>
+	<link rel="canonical" href="{{.CanonicalURL}}">
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="go-srvc">
+	<meta property="og:title" content="{{.Title}}">
+	<meta property="og:description" content="{{.Description}}">
+	<meta property="og:url" content="{{.CanonicalURL}}">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="{{.Title}}">
+	<meta name="twitter:description" content="{{.Description}}">
 	<link rel="stylesheet" href="{{.RelPrefix}}assets/css/main.css">
 	<link rel="stylesheet" href="{{.RelPrefix}}assets/css/anim.css">
 	<link rel="stylesheet" href="{{.RelPrefix}}assets/css/syntax.css">

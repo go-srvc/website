@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
@@ -25,6 +26,10 @@ var templatesFS embed.FS
 // examplePath is read at build time, relative to the website module root.
 // Callers (cmd/gen and render tests) must invoke Build with that as cwd.
 const examplePath = "internal/render/example/main.go"
+
+// SiteURL is the canonical base URL used in absolute links (canonical, og:url,
+// sitemap entries). Trailing slash is added per page.
+const SiteURL = "https://go-srvc.com"
 
 var (
 	chromaStyle     = styles.Get("dracula")
@@ -74,7 +79,38 @@ func Build(opts Options) error {
 	if err := writeSyntaxCSS(opts.Out); err != nil {
 		return fmt.Errorf("write syntax css: %w", err)
 	}
+	if err := writeSitemap(opts.Out); err != nil {
+		return fmt.Errorf("write sitemap: %w", err)
+	}
 	return nil
+}
+
+// writeSitemap walks the output tree and emits a sitemap.xml listing every
+// index.html as an absolute URL under SiteURL.
+func writeSitemap(out string) error {
+	var urls []string
+	walkErr := filepath.WalkDir(out, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || filepath.Base(path) != "index.html" {
+			return err
+		}
+		urls = append(urls, canonicalURL(path, out))
+		return nil
+	})
+	if walkErr != nil {
+		return walkErr
+	}
+	sort.Strings(urls)
+
+	var buf strings.Builder
+	buf.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
+	buf.WriteString(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` + "\n")
+	for _, u := range urls {
+		buf.WriteString("  <url><loc>")
+		buf.WriteString(u)
+		buf.WriteString("</loc></url>\n")
+	}
+	buf.WriteString("</urlset>\n")
+	return os.WriteFile(filepath.Join(out, "sitemap.xml"), []byte(buf.String()), 0o644)
 }
 
 func highlightGo(src string) template.HTML {
@@ -157,13 +193,14 @@ type sidebarSection struct {
 }
 
 type indexData struct {
-	Title       string
-	Description string
-	RelPrefix   string
-	Sidebar     []sidebarSection
-	SrvcVersion string
-	ModCount    int
-	ExampleHTML template.HTML
+	Title        string
+	Description  string
+	RelPrefix    string
+	CanonicalURL string
+	Sidebar      []sidebarSection
+	SrvcVersion  string
+	ModCount     int
+	ExampleHTML  template.HTML
 }
 
 type modsCard struct {
@@ -173,11 +210,12 @@ type modsCard struct {
 }
 
 type modsData struct {
-	Title       string
-	Description string
-	RelPrefix   string
-	Sidebar     []sidebarSection
-	Mods        []modsCard
+	Title        string
+	Description  string
+	RelPrefix    string
+	CanonicalURL string
+	Sidebar      []sidebarSection
+	Mods         []modsCard
 }
 
 type versionLink struct {
@@ -187,18 +225,19 @@ type versionLink struct {
 }
 
 type pkgData struct {
-	Title       string
-	Description string
-	RelPrefix   string
-	Sidebar     []sidebarSection
-	Pkg         catalog.Pkg
-	Version     string
-	IsLatest    bool
-	Versions    []versionLink
-	Doc         *docparse.Package
-	DocHTML     template.HTML
-	ReadmeHTML  template.HTML
-	Sections    pkgSections
+	Title        string
+	Description  string
+	RelPrefix    string
+	CanonicalURL string
+	Sidebar      []sidebarSection
+	Pkg          catalog.Pkg
+	Version      string
+	IsLatest     bool
+	Versions     []versionLink
+	Doc          *docparse.Package
+	DocHTML      template.HTML
+	ReadmeHTML   template.HTML
+	Sections     pkgSections
 }
 
 type pkgSections struct {
@@ -215,11 +254,12 @@ func renderIndex(out string, bundles []bundle) error {
 		return fmt.Errorf("read example: %w", err)
 	}
 	data := indexData{
-		Title:       "go-srvc · Simple, Safe, Modular Service Runner",
-		Description: "A tiny Go library for composing service modules with a clean lifecycle.",
-		RelPrefix:   "",
-		Sidebar:     buildSidebar("", "", ""),
-		ExampleHTML: highlightGo(string(example)),
+		Title:        "go-srvc · Simple, Safe, Modular Service Runner",
+		Description:  "A tiny Go library for composing service modules with a clean lifecycle.",
+		RelPrefix:    "",
+		CanonicalURL: SiteURL + "/",
+		Sidebar:      buildSidebar("", "", ""),
+		ExampleHTML:  highlightGo(string(example)),
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {
@@ -250,11 +290,12 @@ func renderModsCatalog(out string, bundles []bundle) error {
 	}
 	tmpl := mustParse("templates/layout.html.tmpl", "templates/mods.html.tmpl")
 	return writeTemplate(tmpl, filepath.Join(out, "mods", "index.html"), modsData{
-		Title:       "Mods · go-srvc",
-		Description: "Ready-made srvc modules: HTTP, SQL, OpenTelemetry, signal, ticker.",
-		RelPrefix:   "../",
-		Sidebar:     buildSidebar("../", "mods", ""),
-		Mods:        mods,
+		Title:        "Mods · go-srvc",
+		Description:  "Ready-made srvc modules: HTTP, SQL, OpenTelemetry, signal, ticker.",
+		RelPrefix:    "../",
+		CanonicalURL: SiteURL + "/mods/",
+		Sidebar:      buildSidebar("../", "mods", ""),
+		Mods:         mods,
 	})
 }
 
@@ -272,7 +313,8 @@ func renderPackage(out string, b bundle) error {
 		// Versioned page: dist/<group>[/slug]/<v>/index.html
 		versionedPath := filepath.Join(base, v, "index.html")
 		versionedPrefix := relPrefix(versionedPath, out)
-		if err := writeTemplate(tmpl, versionedPath, makePkgData(b, v, doc, isLatest, versionedPrefix)); err != nil {
+		versionedURL := canonicalURL(versionedPath, out)
+		if err := writeTemplate(tmpl, versionedPath, makePkgData(b, v, doc, isLatest, versionedPrefix, versionedURL)); err != nil {
 			return err
 		}
 
@@ -280,7 +322,8 @@ func renderPackage(out string, b bundle) error {
 			// Canonical "latest" page: dist/<group>[/slug]/index.html
 			canonicalPath := filepath.Join(base, "index.html")
 			canonicalPrefix := relPrefix(canonicalPath, out)
-			if err := writeTemplate(tmpl, canonicalPath, makePkgData(b, v, doc, isLatest, canonicalPrefix)); err != nil {
+			canonicalURLStr := canonicalURL(canonicalPath, out)
+			if err := writeTemplate(tmpl, canonicalPath, makePkgData(b, v, doc, isLatest, canonicalPrefix, canonicalURLStr)); err != nil {
 				return err
 			}
 		}
@@ -288,7 +331,7 @@ func renderPackage(out string, b bundle) error {
 	return nil
 }
 
-func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefix string) pkgData {
+func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefix, canURL string) pkgData {
 	versions := make([]versionLink, 0, len(b.Versions))
 	for _, vv := range b.Versions {
 		versions = append(versions, versionLink{
@@ -298,10 +341,11 @@ func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefi
 		})
 	}
 	return pkgData{
-		Title:       fmt.Sprintf("%s@%s · go-srvc", b.Pkg.ImportPath, v),
-		Description: firstSentence(doc.Doc),
-		RelPrefix:   prefix,
-		Sidebar:     buildSidebar(prefix, b.Pkg.Group, b.Pkg.Slug),
+		Title:        fmt.Sprintf("%s@%s · go-srvc", b.Pkg.ImportPath, v),
+		Description:  firstSentence(doc.Doc),
+		RelPrefix:    prefix,
+		CanonicalURL: canURL,
+		Sidebar:      buildSidebar(prefix, b.Pkg.Group, b.Pkg.Slug),
 		Pkg:         b.Pkg,
 		Version:     v,
 		IsLatest:    isLatest,
@@ -317,6 +361,15 @@ func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefi
 			HasEx:     len(doc.Examples) > 0,
 		},
 	}
+}
+
+// canonicalURL returns the absolute https://go-srvc.com URL the page is served at.
+func canonicalURL(outputPath, root string) string {
+	rel, err := filepath.Rel(root, filepath.Dir(outputPath))
+	if err != nil || rel == "." {
+		return SiteURL + "/"
+	}
+	return SiteURL + "/" + filepath.ToSlash(rel) + "/"
 }
 
 // relPrefix returns the relative path from a page's output file back to the

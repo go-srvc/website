@@ -22,6 +22,28 @@
 	</p>
 </section>
 
+<section class="why">
+	<h2>Why srvc?</h2>
+	<div class="why-grid">
+		<div class="why-item">
+			<h3>One small interface</h3>
+			<p>Every module implements <code>Init</code>, <code>Run</code>, <code>Stop</code>, and <code>ID</code>. The runner sequences and supervises them so your <code>main</code> stays a list of components.</p>
+		</div>
+		<div class="why-item">
+			<h3>Safe shutdown</h3>
+			<p>Panics are recovered. Errors from Init, Run, and Stop are aggregated. Stop runs in reverse order on every initialised module, even when something failed mid-flight.</p>
+		</div>
+		<div class="why-item">
+			<h3>Zero deps in core</h3>
+			<p>The <code>srvc</code> package is standard library only. Pull in just the modules you need from <code>go-srvc/mods</code>: HTTP, SQL, OpenTelemetry, signals, tickers.</p>
+		</div>
+		<div class="why-item">
+			<h3>No zombie services</h3>
+			<p>When any Run returns, the whole service shuts down. Optional <code>StopTimeout</code> bounds the wait if a module hangs, so the process never gets stuck half-up.</p>
+		</div>
+	</div>
+</section>
+
 <section class="lifecycle">
 	<h2>Lifecycle, visualized</h2>
 	<p class="lead">Four modules going through srvc's lifecycle under different scenarios. One row plays at a time; hover any row to lock the animation to it.</p>
@@ -69,33 +91,8 @@
 
 <section class="example">
 	<h2>A practical example</h2>
-	<p class="lead">An HTTP server that shuts down cleanly on <code>SIGINT</code>. <code>srvc.Run</code> coordinates the lifecycle of the signal listener and the server. Either module returning ends the run loop, and Stop runs in reverse on the way out.</p>
-	<pre class="example-code"><code>package main
-
-import (
-	"fmt"
-	"net/http"
-	"os"
-
-	"github.com/go-srvc/mods/httpmod"
-	"github.com/go-srvc/mods/sigmod"
-	"github.com/go-srvc/srvc"
-)
-
-func main() {
-	srvc.RunAndExit(
-		sigmod.New(os.Interrupt),
-		httpmod.New(
-			httpmod.WithAddr(":8080"),
-			httpmod.WithHandler(http.HandlerFunc(hello)),
-		),
-	)
-}
-
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "hello, world")
-}
-</code></pre>
+	<p class="lead">A full HTTP service with structured logging via OpenTelemetry, distributed tracing, a Postgres pool, and graceful shutdown on <code>SIGINT</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative.</p>
+	{{.ExampleHTML}}
 </section>
 
 <section class="cards">

@@ -11,12 +11,24 @@ import (
 	"path/filepath"
 	"strings"
 
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
+
 	"github.com/go-srvc/website/internal/catalog"
 	"github.com/go-srvc/website/internal/docparse"
 )
 
 //go:embed templates/*.html.tmpl
 var templatesFS embed.FS
+
+//go:embed example.go.txt
+var practicalExample string
+
+var (
+	chromaStyle     = styles.Get("dracula")
+	chromaFormatter = chromahtml.New(chromahtml.WithClasses(true), chromahtml.TabWidth(4))
+)
 
 // Options configures a site build.
 type Options struct {
@@ -58,7 +70,35 @@ func Build(opts Options) error {
 	if err := copyTree("static", opts.Out); err != nil {
 		return fmt.Errorf("copy static: %w", err)
 	}
+	if err := writeSyntaxCSS(opts.Out); err != nil {
+		return fmt.Errorf("write syntax css: %w", err)
+	}
 	return nil
+}
+
+func highlightGo(src string) template.HTML {
+	iter, err := lexers.Get("go").Tokenise(nil, src)
+	if err != nil {
+		return template.HTML(template.HTMLEscapeString(src))
+	}
+	var buf strings.Builder
+	if err := chromaFormatter.Format(&buf, chromaStyle, iter); err != nil {
+		return template.HTML(template.HTMLEscapeString(src))
+	}
+	return template.HTML(buf.String())
+}
+
+func writeSyntaxCSS(out string) error {
+	dst := filepath.Join(out, "assets", "css", "syntax.css")
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	f, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return chromaFormatter.WriteCSS(f, chromaStyle)
 }
 
 // bundle groups a catalog entry with every tagged version's parsed docs.
@@ -122,6 +162,7 @@ type indexData struct {
 	Sidebar     []sidebarSection
 	SrvcVersion string
 	ModCount    int
+	ExampleHTML template.HTML
 }
 
 type modsCard struct {
@@ -173,6 +214,7 @@ func renderIndex(out string, bundles []bundle) error {
 		Description: "A tiny Go library for composing service modules with a clean lifecycle.",
 		RelPrefix:   "",
 		Sidebar:     buildSidebar("", "", ""),
+		ExampleHTML: highlightGo(practicalExample),
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {

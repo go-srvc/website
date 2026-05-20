@@ -22,8 +22,9 @@ import (
 //go:embed templates/*.html.tmpl
 var templatesFS embed.FS
 
-//go:embed example.go.txt
-var practicalExample string
+// examplePath is read at build time, relative to the website module root.
+// Callers (cmd/gen and render tests) must invoke Build with that as cwd.
+const examplePath = "internal/render/example/main.go"
 
 var (
 	chromaStyle     = styles.Get("dracula")
@@ -209,12 +210,16 @@ type pkgSections struct {
 }
 
 func renderIndex(out string, bundles []bundle) error {
+	example, err := os.ReadFile(examplePath)
+	if err != nil {
+		return fmt.Errorf("read example: %w", err)
+	}
 	data := indexData{
 		Title:       "go-srvc · Simple, Safe, Modular Service Runner",
 		Description: "A tiny Go library for composing service modules with a clean lifecycle.",
 		RelPrefix:   "",
 		Sidebar:     buildSidebar("", "", ""),
-		ExampleHTML: highlightGo(practicalExample),
+		ExampleHTML: highlightGo(string(example)),
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {

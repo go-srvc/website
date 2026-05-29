@@ -1,0 +1,27 @@
+# go-srvc
+
+> Simple, safe, modular service runner for Go.
+
+go-srvc is a tiny Go library and module ecosystem for composing long-running services with a clean lifecycle. Every component implements a small interface (`ID`, `Init`, `Run`, `Stop`); the runner sequences `Init`, supervises `Run` goroutines, calls `Stop` in reverse order on shutdown, recovers panics, and aggregates errors.
+
+The `srvc` package itself has zero third-party dependencies. The companion `mods` repo provides ready-made modules: HTTP server, SQL pool (`database/sql` and `sqlx`), OpenTelemetry logs / metrics / traces, OS signal listener, ticker.
+
+## Documentation
+
+- [srvc package overview and API](https://go-srvc.com/srvc/): the runner library, exported declarations, runnable examples extracted from the latest release.
+- [mods catalog](https://go-srvc.com/mods/): per-module pages with version pickers.
+- [Lifecycle, visualised](https://go-srvc.com/#lifecycle): animated scenarios showing clean shutdown, init error, and panic recovery.
+- [Practical example](https://go-srvc.com/#example): a full HTTP service with logging, tracing, a Postgres pool, and graceful shutdown.
+- [pkg.go.dev godoc](https://pkg.go.dev/github.com/go-srvc/srvc): canonical Go documentation.
+
+## Source
+
+- [github.com/go-srvc/srvc](https://github.com/go-srvc/srvc): runner core.
+- [github.com/go-srvc/mods](https://github.com/go-srvc/mods): module catalog.
+- [github.com/go-srvc/website](https://github.com/go-srvc/website): documentation site source.
+
+## Install
+
+```
+go get github.com/go-srvc/srvc@latest
+```

@@ -78,6 +78,13 @@
 		<h3>type {{.Name}}</h3>
 		<div class="sig">{{hl .Signature}}</div>
 		{{if .Doc}}{{godoc .Doc}}{{end}}
+		{{range .Funcs}}
+		<div class="decl method" id="fn-{{.Name}}">
+			<h4>func {{.Name}}</h4>
+			<div class="sig">{{hl .Signature}}</div>
+			{{if .Doc}}{{godoc .Doc}}{{end}}
+		</div>
+		{{end}}
 		{{range .Methods}}
 		<div class="decl method" id="method-{{.Recv}}-{{.Name}}">
 			<h4>func ({{.Recv}}) {{.Name}}</h4>

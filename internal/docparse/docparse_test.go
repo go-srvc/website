@@ -50,6 +50,14 @@ func TestParse_sample(t *testing.T) {
 	if got := len(counter.Methods); got != 2 {
 		t.Errorf("Counter methods len = %d, want 2", got)
 	}
+	if got := len(counter.Funcs); got != 1 || counter.Funcs[0].Name != "NewCounter" {
+		t.Errorf("Counter funcs = %+v, want NewCounter", counter.Funcs)
+	}
+	for _, f := range pkg.Funcs {
+		if f.Name == "NewCounter" {
+			t.Errorf("NewCounter listed as package func; want it under type Counter only")
+		}
+	}
 
 	if got := len(pkg.Examples); got != 1 {
 		t.Errorf("Examples len = %d, want 1", got)

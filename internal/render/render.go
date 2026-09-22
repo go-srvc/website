@@ -23,9 +23,12 @@ import (
 //go:embed templates/*.html.tmpl
 var templatesFS embed.FS
 
-// examplePath is read at build time, relative to the website module root.
+// Example sources are read at build time, relative to the website module root.
 // Callers (cmd/gen and render tests) must invoke Build with that as cwd.
-const examplePath = "internal/render/example/main.go"
+const (
+	examplePath = "internal/render/example/main.go"
+	fnModsPath  = "internal/render/example/fnmods/main.go"
+)
 
 // SiteURL is the canonical base URL used in absolute links (canonical, og:url,
 // sitemap entries). Trailing slash is added per page.
@@ -201,6 +204,7 @@ type indexData struct {
 	SrvcVersion  string
 	ModCount     int
 	ExampleHTML  template.HTML
+	FnModsHTML   template.HTML
 }
 
 type modsCard struct {
@@ -253,6 +257,10 @@ func renderIndex(out string, bundles []bundle) error {
 	if err != nil {
 		return fmt.Errorf("read example: %w", err)
 	}
+	fnMods, err := os.ReadFile(fnModsPath)
+	if err != nil {
+		return fmt.Errorf("read fnmods example: %w", err)
+	}
 	data := indexData{
 		Title:        "go-srvc · Simple, Safe, Modular Service Runner",
 		Description:  "A tiny Go library for composing service modules with a clean lifecycle.",
@@ -260,6 +268,7 @@ func renderIndex(out string, bundles []bundle) error {
 		CanonicalURL: SiteURL + "/",
 		Sidebar:      buildSidebar("", "", ""),
 		ExampleHTML:  highlightGo(string(example)),
+		FnModsHTML:   highlightGo(string(fnMods)),
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {

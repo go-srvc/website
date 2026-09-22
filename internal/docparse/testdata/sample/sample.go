@@ -19,6 +19,9 @@ type Counter struct {
 	n int
 }
 
+// NewCounter returns a Counter starting at zero.
+func NewCounter() *Counter { return &Counter{} }
+
 // Inc increments the counter.
 func (c *Counter) Inc() { c.n++ }
 

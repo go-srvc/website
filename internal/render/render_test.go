@@ -29,6 +29,11 @@ func TestBuild_StaticOnly(t *testing.T) {
 	if !strings.Contains(string(idx), "go-srvc") {
 		t.Errorf("index.html missing title text")
 	}
+	for _, want := range []string{`id="example"`, `id="functions"`, "IdleMod"} {
+		if !strings.Contains(string(idx), want) {
+			t.Errorf("index.html missing %q", want)
+		}
+	}
 
 	cname, err := os.ReadFile(filepath.Join(dir, "CNAME"))
 	if err != nil {

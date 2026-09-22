@@ -28,7 +28,7 @@
 	<div class="why-grid">
 		<div class="why-item">
 			<h3>One small interface</h3>
-			<p>Every module implements <code>Init</code>, <code>Run</code>, <code>Stop</code>, and <code>ID</code>. The runner sequences and supervises them so your <code>main</code> stays a list of components.</p>
+			<p>Every module implements <code>Init</code>, <code>Run</code>, <code>Stop</code>, and <code>ID</code>. The runner sequences and supervises them so your <code>main</code> stays a list of components. Plain functions slot in through <code>InitMod</code>, <code>RunMod</code>, <code>StopMod</code>, <code>CtxMod</code>, and <code>IdleMod</code>.</p>
 		</div>
 		<div class="why-item">
 			<h3>Safe shutdown</h3>
@@ -36,7 +36,7 @@
 		</div>
 		<div class="why-item">
 			<h3>Zero deps in core</h3>
-			<p>The <code>srvc</code> package is standard library only. Pull in just the modules you need from <code>go-srvc/mods</code>: HTTP, SQL, OpenTelemetry, signals, tickers.</p>
+			<p>The <code>srvc</code> package is standard library only: the runner, the <code>Module</code> interface, and thin function adapters. Pull in just the modules you need from <code>go-srvc/mods</code>: HTTP, SQL, OpenTelemetry, signals, tickers.</p>
 		</div>
 		<div class="why-item">
 			<h3>No zombie services</h3>
@@ -45,7 +45,7 @@
 	</div>
 </section>
 
-<section class="lifecycle">
+<section class="lifecycle" id="lifecycle">
 	<h2>Lifecycle, visualized</h2>
 	<p class="lead">Four modules going through srvc's lifecycle under different scenarios. One row plays at a time; hover any row to lock the animation to it.</p>
 	<div class="legend" aria-hidden="true">
@@ -83,10 +83,17 @@
 	</div>
 </section>
 
-<section class="example">
+<section class="example" id="example">
 	<h2>A practical example</h2>
-	<p class="lead">A full HTTP service with structured logging via OpenTelemetry, distributed tracing, a Postgres pool, and graceful shutdown on <code>SIGINT</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative.</p>
+	<p class="lead">A full HTTP service with OpenTelemetry logs, traces, and metrics, a Postgres pool, and graceful shutdown on <code>SIGINT</code> or <code>SIGTERM</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative.</p>
 	{{.ExampleHTML}}
+</section>
+
+<section class="example fnmods" id="functions">
+	<h2>Functions as modules</h2>
+	<p class="lead">Not everything deserves a struct. <code>srvc</code> ships five thin adapters that turn plain functions into modules. They are glue only: no options, no defaults, no logic of their own. Anything that wraps a real dependency belongs in a proper module, yours or one from <code>go-srvc/mods</code>.</p>
+	{{.FnModsHTML}}
+	<p class="after"><code>RunMod</code> and <code>CtxMod</code> run their function during the run phase and end the service when it returns; <code>CtxMod</code> cancels the context on <code>Stop</code>. <code>InitMod</code>, <code>StopMod</code>, and <code>IdleMod</code> have no run-phase work, so their <code>Run</code> blocks until shutdown. Stop order stays reverse of the module list.</p>
 </section>
 
 <section class="cards">

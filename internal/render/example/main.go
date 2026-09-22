@@ -8,6 +8,7 @@ import (
 	"github.com/XSAM/otelsql"
 	"github.com/go-srvc/mods/httpmod"
 	"github.com/go-srvc/mods/logmod"
+	"github.com/go-srvc/mods/metermod"
 	"github.com/go-srvc/mods/sigmod"
 	"github.com/go-srvc/mods/sqlxmod"
 	"github.com/go-srvc/mods/tracemod"
@@ -26,7 +27,8 @@ func main() {
 	srvc.RunAndExit(
 		logmod.New(),
 		tracemod.New(),
-		sigmod.New(os.Interrupt),
+		metermod.New(),
+		sigmod.New(),
 		db,
 		httpmod.New(
 			httpmod.WithAddr(":8080"),

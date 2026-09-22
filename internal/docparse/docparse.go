@@ -44,6 +44,7 @@ type TypeDecl struct {
 	Name      string
 	Signature string
 	Doc       string
+	Funcs     []FuncDecl // functions go/doc associates with the type, e.g. constructors returning it
 	Methods   []FuncDecl
 }
 
@@ -114,6 +115,9 @@ func Parse(dir, importPath string) (*Package, error) {
 			Name:      t.Name,
 			Signature: typeSpecText(fset, t),
 			Doc:       t.Doc,
+		}
+		for _, f := range t.Funcs {
+			td.Funcs = append(td.Funcs, funcDecl(fset, f))
 		}
 		for _, m := range t.Methods {
 			td.Methods = append(td.Methods, funcDecl(fset, m))

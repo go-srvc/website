@@ -18,8 +18,8 @@ tidy: ## Tidy go.mod (website + example)
 vet: example-vet ## go vet (website + example)
 	go vet ./...
 
-example-build: ## Compile the embedded practical example (no binary kept)
-	cd $(EXAMPLE_DIR) && go build -o /dev/null .
+example-build: ## Compile the embedded examples (no binaries kept)
+	cd $(EXAMPLE_DIR) && go build ./...
 
 example-vet: ## go vet the embedded practical example
 	cd $(EXAMPLE_DIR) && go vet ./...

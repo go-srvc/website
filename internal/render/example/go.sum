@@ -26,8 +26,8 @@ github.com/go-srvc/mods/sqlxmod v1.14.0 h1:IroaGThCU3qD3+Hv53LRSmIY1xyIcuG2zlT+s
 github.com/go-srvc/mods/sqlxmod v1.14.0/go.mod h1:3tuRKk7gZ4OHfbT0aSvQBpQvRApoeyayAviao55VOpo=
 github.com/go-srvc/mods/tracemod v1.14.0 h1:iGoacp2cmPVbv24TV/bi2fyDTZ+xYgrsAYnf9mJNN6w=
 github.com/go-srvc/mods/tracemod v1.14.0/go.mod h1:oA85guhClnt4c7ktKLOFzJ3yFCn4Yiw7MR2gei+sxk0=
-github.com/go-srvc/srvc v1.10.0 h1:XGyAeuSIF1rbVLCwWerb2xSw00vvjMlnBIJVCNMiW1g=
-github.com/go-srvc/srvc v1.10.0/go.mod h1:O2sIFl7po3o53Cptjyc8sz/4I4NFhy5vd2helT6hpPk=
+github.com/go-srvc/srvc v1.11.0 h1:B7ZXOULLtfdeE+a/JxUs4K73NLLpHBdn7YcQikhIKWM=
+github.com/go-srvc/srvc v1.11.0/go.mod h1:O2sIFl7po3o53Cptjyc8sz/4I4NFhy5vd2helT6hpPk=
 github.com/golang/protobuf v1.5.4 h1:i7eJL8qZTpSEXOPTxNKhASYpMn+8e5Q6AdndVa1dWek=
 github.com/golang/protobuf v1.5.4/go.mod h1:lnTiLA8Wa4RWRcIUkrtSVa5nRhsEGBg48fD6rSs7xps=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=

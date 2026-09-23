@@ -28,7 +28,7 @@
 	<div class="why-grid">
 		<div class="why-item">
 			<h3>One small interface</h3>
-			<p>Every module implements <code>Init</code>, <code>Run</code>, <code>Stop</code>, and <code>ID</code>. The runner sequences and supervises them so your <code>main</code> stays a list of components. Plain functions slot in through <code>InitMod</code>, <code>RunMod</code>, <code>StopMod</code>, <code>CtxMod</code>, and <code>IdleMod</code>.</p>
+			<p>Every module implements <code>Init</code>, <code>Run</code>, <code>Stop</code>, and <code>ID</code>. The runner sequences and supervises them so your <code>main</code> stays a list of components. Plain functions slot in through <code>InitMod</code>, <code>RunMod</code>, <code>StopMod</code>, <code>CtxMod</code>, and <code>IdleMod</code>. <code>Optional</code> toggles any module with a flag.</p>
 		</div>
 		<div class="why-item">
 			<h3>Safe shutdown</h3>
@@ -85,7 +85,7 @@
 
 <section class="example" id="example">
 	<h2>A practical example</h2>
-	<p class="lead">A full HTTP service with OpenTelemetry logs, traces, and metrics, a Postgres pool, and graceful shutdown on <code>SIGINT</code> or <code>SIGTERM</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative.</p>
+	<p class="lead">A full HTTP service with OpenTelemetry logs, traces, and metrics, a Postgres pool, and graceful shutdown on <code>SIGINT</code> or <code>SIGTERM</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative. Metrics are toggled with <code>Optional</code>: a disabled module is dropped before the init phase, so none of its <code>Init</code>, <code>Run</code>, or <code>Stop</code> functions are called and its ID is logged as disabled.</p>
 	{{.ExampleHTML}}
 </section>
 

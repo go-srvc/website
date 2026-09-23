@@ -10,7 +10,7 @@ require (
 	github.com/go-srvc/mods/sigmod v1.13.0
 	github.com/go-srvc/mods/sqlxmod v1.14.0
 	github.com/go-srvc/mods/tracemod v1.14.0
-	github.com/go-srvc/srvc v1.10.0
+	github.com/go-srvc/srvc v1.11.0
 	github.com/jackc/pgx/v5 v5.9.2
 	go.opentelemetry.io/otel v1.46.0
 )

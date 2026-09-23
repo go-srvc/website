@@ -27,7 +27,7 @@ func main() {
 	srvc.RunAndExit(
 		logmod.New(),
 		tracemod.New(),
-		metermod.New(),
+		srvc.Optional(os.Getenv("METRICS") == "1", metermod.New()),
 		sigmod.New(),
 		db,
 		httpmod.New(

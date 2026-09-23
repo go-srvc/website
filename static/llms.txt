@@ -13,6 +13,7 @@ The `srvc` package itself has zero third-party dependencies: it ships the runner
 - [Lifecycle, visualised](https://go-srvc.com/#lifecycle): animated scenarios showing clean shutdown, init error, and panic recovery.
 - [Practical example](https://go-srvc.com/#example): a full HTTP service with OpenTelemetry logs, traces, and metrics (toggled with `Optional`), a Postgres pool, and graceful shutdown.
 - [Functions as modules](https://go-srvc.com/#functions): the `InitMod`, `RunMod`, `StopMod`, `CtxMod`, and `IdleMod` adapters.
+- [Optional modules](https://go-srvc.com/#optional): `Optional` toggles a module with a flag and drops a disabled module before the init phase.
 - [pkg.go.dev godoc](https://pkg.go.dev/github.com/go-srvc/srvc): canonical Go documentation.
 
 ## Source

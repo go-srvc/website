@@ -26,8 +26,9 @@ var templatesFS embed.FS
 // Example sources are read at build time, relative to the website module root.
 // Callers (cmd/gen and render tests) must invoke Build with that as cwd.
 const (
-	examplePath = "internal/render/example/main.go"
-	fnModsPath  = "internal/render/example/fnmods/main.go"
+	examplePath  = "internal/render/example/main.go"
+	fnModsPath   = "internal/render/example/fnmods/main.go"
+	optionalPath = "internal/render/example/optional/main.go"
 )
 
 // SiteURL is the canonical base URL used in absolute links (canonical, og:url,
@@ -205,6 +206,7 @@ type indexData struct {
 	ModCount     int
 	ExampleHTML  template.HTML
 	FnModsHTML   template.HTML
+	OptionalHTML template.HTML
 }
 
 type modsCard struct {
@@ -261,6 +263,10 @@ func renderIndex(out string, bundles []bundle) error {
 	if err != nil {
 		return fmt.Errorf("read fnmods example: %w", err)
 	}
+	optional, err := os.ReadFile(optionalPath)
+	if err != nil {
+		return fmt.Errorf("read optional example: %w", err)
+	}
 	data := indexData{
 		Title:        "go-srvc · Simple, Safe, Modular Service Runner",
 		Description:  "A tiny Go library for composing service modules with a clean lifecycle.",
@@ -269,6 +275,7 @@ func renderIndex(out string, bundles []bundle) error {
 		Sidebar:      buildSidebar("", "", ""),
 		ExampleHTML:  highlightGo(string(example)),
 		FnModsHTML:   highlightGo(string(fnMods)),
+		OptionalHTML: highlightGo(string(optional)),
 	}
 	for _, b := range bundles {
 		switch b.Pkg.Group {
@@ -355,13 +362,13 @@ func makePkgData(b bundle, v string, doc *docparse.Package, isLatest bool, prefi
 		RelPrefix:    prefix,
 		CanonicalURL: canURL,
 		Sidebar:      buildSidebar(prefix, b.Pkg.Group, b.Pkg.Slug),
-		Pkg:         b.Pkg,
-		Version:     v,
-		IsLatest:    isLatest,
-		Versions:    versions,
-		Doc:         doc,
-		DocHTML:     godocHTML(doc.Doc),
-		ReadmeHTML:  markdownHTML(doc.Readme),
+		Pkg:          b.Pkg,
+		Version:      v,
+		IsLatest:     isLatest,
+		Versions:     versions,
+		Doc:          doc,
+		DocHTML:      godocHTML(doc.Doc),
+		ReadmeHTML:   markdownHTML(doc.Readme),
 		Sections: pkgSections{
 			HasConsts: len(doc.Consts) > 0,
 			HasVars:   len(doc.Vars) > 0,

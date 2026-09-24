@@ -85,7 +85,7 @@
 
 <section class="example" id="example">
 	<h2>A practical example</h2>
-	<p class="lead">A full HTTP service with OpenTelemetry logs, traces, and metrics, a Postgres pool, and graceful shutdown on <code>SIGINT</code> or <code>SIGTERM</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative. Metrics are toggled with <code>Optional</code>: a disabled module is dropped before the init phase, so none of its <code>Init</code>, <code>Run</code>, or <code>Stop</code> functions are called and its ID is logged as disabled.</p>
+	<p class="lead">A full HTTP service with OpenTelemetry logs, traces, and metrics, a Postgres pool, and graceful shutdown on <code>SIGINT</code> or <code>SIGTERM</code>. Modules compose, the runner supervises, your <code>main</code> stays declarative.</p>
 	{{.ExampleHTML}}
 </section>
 
@@ -94,6 +94,13 @@
 	<p class="lead">Not everything deserves a struct. <code>srvc</code> ships five thin adapters that turn plain functions into modules. They are glue only: no options, no defaults, no logic of their own. Anything that wraps a real dependency belongs in a proper module, yours or one from <code>go-srvc/mods</code>.</p>
 	{{.FnModsHTML}}
 	<p class="after"><code>RunMod</code> and <code>CtxMod</code> run their function during the run phase and end the service when it returns; <code>CtxMod</code> cancels the context on <code>Stop</code>. <code>InitMod</code>, <code>StopMod</code>, and <code>IdleMod</code> have no run-phase work, so their <code>Run</code> blocks until shutdown. Stop order stays reverse of the module list.</p>
+</section>
+
+<section class="example optional" id="optional">
+	<h2>Optional modules</h2>
+	<p class="lead"><code>Optional</code> toggles a module with a flag. A disabled module is dropped before the init phase, so none of its <code>Init</code>, <code>Run</code>, or <code>Stop</code> functions are called, and its ID is logged as disabled. The rest of the module list runs as if it was never there.</p>
+	{{.OptionalHTML}}
+	<p class="after">The module is still constructed by the caller, so keep heavy work in <code>Init</code> rather than the constructor. A disabled module may be <code>nil</code>. Enabled modules keep their position, so init and stop order stay predictable regardless of which flags are set.</p>
 </section>
 
 <section class="cards">
